@@ -1,6 +1,5 @@
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.Reader;
 import java.net.URL;
@@ -22,6 +21,7 @@ public class GetCardJSON {
     }
 
 	public JSONArray readJSONFromURL(UserInput userInput) throws IOException {
+		// Use School Idol Tomodachi's API to get card data
 		String baseURL = "http://schoolido.lu/api/cards/";
 		String URL = baseURL + userInput.getCard1ID();
         InputStream is = new URL(URL).openStream();

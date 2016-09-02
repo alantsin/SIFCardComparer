@@ -1,4 +1,3 @@
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
@@ -126,7 +125,7 @@ public class CardComparisonWindow {
 		comboSong.setText("μ's");
 		
 		Label lblNoteCount = new Label(shlSifCardStrength, SWT.NONE);
-		lblNoteCount.setToolTipText("Number of notes in the song, required for Note-based skills");
+		lblNoteCount.setToolTipText("Number of notes in the song, required for Note-based and Combo-based skills");
 		lblNoteCount.setBounds(5, 90, 62, 15);
 		lblNoteCount.setText("Note Count");
 		
@@ -371,6 +370,7 @@ public class CardComparisonWindow {
 				// Pass UserInput to CardComparison function
 				try {
 					CardComparison cardComparison = new CardComparison(userInput);
+					cardComparison.getFinalAnswer();
 					
 				} catch (IOException e) {
 					// TODO Auto-generated catch block

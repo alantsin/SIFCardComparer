@@ -43,7 +43,7 @@ public class UserInput {
 		card2ID = card2id;
 	}
 
-	public boolean isCard1Idolized() {
+	public boolean getCard1Idolized() {
 		return card1Idolized;
 	}
 
@@ -51,7 +51,7 @@ public class UserInput {
 		this.card1Idolized = card1Idolized;
 	}
 
-	public boolean isCard2Idolized() {
+	public boolean getCard2Idolized() {
 		return card2Idolized;
 	}
 

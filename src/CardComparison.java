@@ -24,12 +24,12 @@ public class CardComparison {
 		
 		// GET for Card 1
 		JSONArray output1 = cardJSON.readJSONFromURL(userInput);
-		Card card1 = new Card(output1);
+		Card card1 = new Card(output1, userInput, 1);
 		
 		// GET for Card 2 if required
 		if (userInput.getCard2ID() != "0" || userInput.getCard2ID() != userInput.getCard1ID()) {
 			JSONArray output2 = cardJSON.readJSONFromURL(userInput);
-			Card card2 = new Card(output2);
+			Card card2 = new Card(output2, userInput, 2);
 			isThereCard2 = true;
 		}
 		
@@ -52,6 +52,10 @@ public class CardComparison {
 			}
 			
 			CompareCards compare = new CompareCards();
+			
+		}
+		
+		else {
 			
 		}
 		
