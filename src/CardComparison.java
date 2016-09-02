@@ -13,28 +13,52 @@ import java.io.InputStreamReader;
 
 public class CardComparison {
 	
-	// The two cards to compare; TODO: UI for selecting cards
-	public static String card1ID = "30";
-	public static String card2ID = "31";
-
-	public static void main(String[] args) throws IOException {
+	private boolean isThereCard2 = false;
+	
+	private String finalAnswer;
+	
+	public CardComparison(UserInput userInput) throws IOException {
 		
-		// GET JSON for both cards
+		// GET JSON data for cards
 		GetCardJSON cardJSON = new GetCardJSON();
 		
-		JSONArray output1 = cardJSON.readJSONFromURL(card1ID);
-		JSONArray output2 = cardJSON.readJSONFromURL(card2ID);
-		
-		// Assign values to card variables
+		// GET for Card 1
+		JSONArray output1 = cardJSON.readJSONFromURL(userInput);
 		Card card1 = new Card(output1);
-		Card card2 = new Card(output2);
 		
-		// Compare cards
-		CompareCards compare = new CompareCards();
-		String result = compare.Compare(card1, card2);
+		// GET for Card 2 if required
+		if (userInput.getCard2ID() != "0" || userInput.getCard2ID() != userInput.getCard1ID()) {
+			JSONArray output2 = cardJSON.readJSONFromURL(userInput);
+			Card card2 = new Card(output2);
+			isThereCard2 = true;
+		}
 		
-		// Output answer
-		System.out.println(result + " is the stronger card.");
+		// Calculate strength of Card 1
+		if (userInput.getCalculationMethod() == "Absolute") {
+			AbsoluteCalculator absoluteCalculator1 = new AbsoluteCalculator();
+		}
+		else {
+			AverageCalculator averageCalculator1 = new AverageCalculator();
+		}
+		
+		// Calculate strength of Card 2 and compare if required
+		if (isThereCard2 == true) {
+			
+			if (userInput.getCalculationMethod() == "Absolute") {
+				AbsoluteCalculator absoluteCalculator2 = new AbsoluteCalculator();
+			}
+			else {
+				AverageCalculator averageCalculator2 = new AverageCalculator();
+			}
+			
+			CompareCards compare = new CompareCards();
+			
+		}
+		
+	}
+
+	public String getFinalAnswer() {
+		return finalAnswer;
 	}
 
 }

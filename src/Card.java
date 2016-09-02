@@ -24,32 +24,32 @@ public class Card {
 		JSONObject obj;
 		try {
 			obj = cardJSON.getJSONObject(0);
-			id = Integer.toString(obj.getInt("id"));
-			attribute = obj.getString("attribute");
+			this.id = Integer.toString(obj.getInt("id"));
+			this.attribute = obj.getString("attribute");
 			
-			smileStatMax = obj.getInt("non_idolized_maximum_statistics_smile");
-			pureStatMax  = obj.getInt("non_idolized_maximum_statistics_pure");
-			coolStatMax  = obj.getInt("non_idolized_maximum_statistics_cool");
+			this.smileStatMax = obj.getInt("non_idolized_maximum_statistics_smile");
+			this.pureStatMax  = obj.getInt("non_idolized_maximum_statistics_pure");
+			this.coolStatMax  = obj.getInt("non_idolized_maximum_statistics_cool");
 			
-			smileStatIdolizedMax = obj.getInt("idolized_maximum_statistics_smile");
-			pureStatIdolizedMax  = obj.getInt("idolized_maximum_statistics_pure");
-			coolStatIdolizedMax  = obj.getInt("idolized_maximum_statistics_cool");
+			this.smileStatIdolizedMax = obj.getInt("idolized_maximum_statistics_smile");
+			this.pureStatIdolizedMax  = obj.getInt("idolized_maximum_statistics_pure");
+			this.coolStatIdolizedMax  = obj.getInt("idolized_maximum_statistics_cool");
 			
-			rarity = obj.getString("rarity");
+			this.rarity = obj.getString("rarity");
 			
-			if (rarity != "N") {
-				skillDetails = obj.getString("skill_details");
+			if (this.rarity != "N") {
+				this.skillDetails = obj.getString("skill_details");
 				
-				if (skillDetails.contains("score")) {
-					skillType = "Score";
+				if (this.skillDetails.contains("score")) {
+					this.skillType = "Score";
 				}
 				
-				else if (skillDetails.contains("turning")) {
-					skillType = "Perfect Lock";
+				else if (this.skillDetails.contains("turning")) {
+					this.skillType = "Perfect Lock";
 				}
 				
 				else {
-					skillType = "Healer";
+					this.skillType = "Healer";
 				}
 			}
 			

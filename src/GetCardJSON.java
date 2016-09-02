@@ -21,9 +21,9 @@ public class GetCardJSON {
         return sb.toString();
     }
 
-	public JSONArray readJSONFromURL(String id) throws IOException {
+	public JSONArray readJSONFromURL(UserInput userInput) throws IOException {
 		String baseURL = "http://schoolido.lu/api/cards/";
-		String URL = baseURL + id;
+		String URL = baseURL + userInput.getCard1ID();
         InputStream is = new URL(URL).openStream();
         JSONArray json = null;
         try {
