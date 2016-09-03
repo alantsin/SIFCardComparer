@@ -4,28 +4,42 @@ import org.json.JSONObject;
 
 public class Card {
 	
+	private String name;
+	private String year;
+	private String mainUnit;
+	private String subUnit;
+	
 	private String id;
 	private String cardAttribute;
 	
 	private String rarity;
 	
 	private int baseStat;
+	private int offStat;
 	
 	private int bondPoints;
 	
 	private String skillType;
 	private String skillDetails;
 	
+	
+	
 	public Card(JSONArray cardJSON, UserInput userInput, int cardNumber) {
-		JSONObject obj;
+		JSONObject card;
 		try {
-			obj = cardJSON.getJSONObject(0);
-			this.id = Integer.toString(obj.getInt("id"));
-			this.cardAttribute = obj.getString("attribute");
+			card = cardJSON.getJSONObject(0);
 			
-			this.rarity = obj.getString("rarity");
+			this.rarity = card.getString("rarity");
 			
-			this.skillType = skillType(obj);
+			// GET idol information
+			
+			idolObject(card);
+			
+			// GET calculator information
+			this.id = Integer.toString(card.getInt("id"));
+			this.cardAttribute = card.getString("attribute");
+			
+			SkillDetails(card);
 			
 			// For card 1
 			if (cardNumber == 1) {
@@ -33,7 +47,9 @@ public class Card {
 				// If card 1 is idolized
 				if (userInput.getCard1Idolized()) {
 					
-					this.baseStat = baseStatIdolized(obj);
+					this.baseStat = baseStatIdolized(userInput, card);
+					
+					this.offStat = offStatIdolized(userInput, card);
 					
 					this.bondPoints = bondPoints();
 					
@@ -42,7 +58,9 @@ public class Card {
 				// Else card 1 is not idolized
 				else {
 					
-					this.baseStat = baseStatNotIdolized(obj);
+					this.baseStat = baseStatNotIdolized(userInput, card);
+					
+					this.offStat = offStatNotIdolized(userInput, card);
 					
 					this.bondPoints = bondPoints() / 2;
 					
@@ -56,7 +74,9 @@ public class Card {
 				// If card 2 is idolized
 				if (userInput.getCard2Idolized()) {
 					
-					this.baseStat = baseStatIdolized(obj);
+					this.baseStat = baseStatIdolized(userInput, card);
+					
+					this.offStat = offStatIdolized(userInput, card);
 					
 					this.bondPoints = bondPoints();
 					
@@ -65,30 +85,66 @@ public class Card {
 				// Else card 2 is not idolized
 				else {
 					
-					this.baseStat = baseStatNotIdolized(obj);
+					this.baseStat = baseStatNotIdolized(userInput, card);
+					
+					this.offStat = offStatNotIdolized(userInput, card);
+					
 					this.bondPoints = bondPoints() / 2;
 				}
 				
 			}
-			
 			
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	
-	private int baseStatIdolized(JSONObject obj) throws JSONException {
+
+	private void SkillDetails(JSONObject card) throws JSONException {
+		if (!"N".equals(this.rarity)) {
+			this.skillDetails = card.getString("skill_details");
+			
+			if (this.skillDetails.contains("score")) {
+				this.skillType = "Score";
+			}
+			
+			else if (this.skillDetails.contains("turning")) {
+				this.skillType = "Perfect Lock";
+			}
+			
+			else {
+				this.skillType = "Healer";
+			}
+		}
+		
+		else {
+			this.skillType = "";
+		}
+	}
+
+	private void idolObject(JSONObject card) throws JSONException {
+		if (!"N".equals(this.rarity)) {
+			
+		JSONObject idol = card.getJSONObject("idol");
+		this.name = idol.getString("name");
+		this.year = idol.getString("year");
+		this.mainUnit = idol.getString("main_unit");
+		this.subUnit = idol.getString("sub_unit");
+		
+		}
+	}
+
+	private int baseStatIdolized(UserInput userInput, JSONObject obj) throws JSONException {
 		// GET base stat
-		if (this.cardAttribute == "Smile") {
+		if ("Smile".equals(userInput.getAttribute())) {
 			return obj.getInt("idolized_maximum_statistics_smile");
 		}
 		
-		else if (this.cardAttribute == "Pure") {
+		else if ("Pure".equals(userInput.getAttribute())) {
 			return obj.getInt("idolized_maximum_statistics_pure");
 		}
 		
-		else if (this.cardAttribute == "Cool") {
+		else if ("Cool".equals(userInput.getAttribute())) {
 			return obj.getInt("idolized_maximum_statistics_cool");
 		}
 		
@@ -97,17 +153,17 @@ public class Card {
 		}
 	}
 
-	private int baseStatNotIdolized(JSONObject obj) throws JSONException {
+	private int baseStatNotIdolized(UserInput userInput, JSONObject obj) throws JSONException {
 		// GET not idolized base stats
-		if (this.cardAttribute == "Smile") {
+		if ("Smile".equals(userInput.getAttribute())) {
 			return obj.getInt("non_idolized_maximum_statistics_smile");
 		}
 		
-		else if (this.cardAttribute == "Pure") {
+		else if ("Pure".equals(userInput.getAttribute())) {
 			return obj.getInt("non_idolized_maximum_statistics_pure");
 		}
 		
-		else if (this.cardAttribute == "Cool") {
+		else if ("Cool".equals(userInput.getAttribute())) {
 			return obj.getInt("non_idolized_maximum_statistics_cool");
 		}
 		
@@ -115,34 +171,182 @@ public class Card {
 			return 0;
 		}
 	}
+	
+	private int offStatIdolized(UserInput userInput, JSONObject card) throws JSONException {
+		if (userInput.getCenterSkill().contains("12% Smile")) {
+			
+			if (userInput.getCenterSkill().contains("Pure")) {
+				
+				return card.getInt("idolized_maximum_statistics_pure");
+				
+			}
+			
+			else if (userInput.getCenterSkill().contains("Cool")) {
+				
+				return card.getInt("idolized_maximum_statistics_cool");
+				
+			}
+			
+			else {
+				// Set Off Stat to equal Base Stat
+				return this.baseStat;
+				
+			}
+			
+		}
+		
+		else if (userInput.getCenterSkill().contains("12% Pure")) {
+			
+			if (userInput.getCenterSkill().contains("Smile")) {
+				
+				return card.getInt("idolized_maximum_statistics_smile");
+				
+			}
+			
+			else if (userInput.getCenterSkill().contains("Cool")) {
+				
+				return card.getInt("idolized_maximum_statistics_cool");
+				
+			}
+			
+			else {
+				// Set Off Stat to equal Base Stat
+				return this.baseStat;
+				
+			}
+			
+		}
+		
+		else if (userInput.getCenterSkill().contains("12% Cool")) {
+			
+			if (userInput.getCenterSkill().contains("Smile")) {
+				
+				return card.getInt("idolized_maximum_statistics_smile");
+				
+			}
+			
+			else if (userInput.getCenterSkill().contains("Pure")) {
+				
+				return card.getInt("idolized_maximum_statistics_pure");
+				
+			}
+			
+			else {
+				// Set Off Stat to equal Base Stat
+				return this.baseStat;
+				
+			}
+			
+		}
+		
+		else {
+			// Set Off Stat to equal Base Stat
+			return this.baseStat;
+			
+		}
+	}
+	
+	private int offStatNotIdolized(UserInput userInput, JSONObject card) throws JSONException {
+		if (userInput.getCenterSkill().contains("12% Smile")) {
+			
+			if (userInput.getCenterSkill().contains("Pure")) {
+				
+				return card.getInt("non_idolized_maximum_statistics_pure");
+				
+			}
+			
+			else if (userInput.getCenterSkill().contains("Cool")) {
+				
+				return card.getInt("non_idolized_maximum_statistics_cool");
+				
+			}
+			
+			else {
+				// Set Off Stat to equal Base Stat
+				return this.baseStat;
+				
+			}
+			
+		}
+		
+		else if (userInput.getCenterSkill().contains("12% Pure")) {
+			
+			if (userInput.getCenterSkill().contains("Smile")) {
+				
+				return card.getInt("non_idolized_maximum_statistics_smile");
+				
+			}
+			
+			else if (userInput.getCenterSkill().contains("Cool")) {
+				
+				return card.getInt("non_idolized_maximum_statistics_cool");
+				
+			}
+			
+			else {
+				// Set Off Stat to equal Base Stat
+				return this.baseStat;
+				
+			}
+			
+		}
+		
+		else if (userInput.getCenterSkill().contains("12% Cool")) {
+			
+			if (userInput.getCenterSkill().contains("Smile")) {
+				
+				return card.getInt("non_idolized_maximum_statistics_smile");
+				
+			}
+			
+			else if (userInput.getCenterSkill().contains("Pure")) {
+				
+				return card.getInt("non_idolized_maximum_statistics_pure");
+				
+			}
+			
+			else {
+				// Set Off Stat to equal Base Stat
+				return this.baseStat;
+				
+			}
+			
+		}
+		
+		else {
+			// Set Off Stat to equal Base Stat
+			return this.baseStat;
+			
+		}
+	}
 
 	private int bondPoints() {
 		// GET bond points
-		if (this.rarity == "N") {
+		if ("N".equals(this.rarity)) {
 			
 			return 50;
 			
 		}
 		
-		else if (this.rarity == "R") {
+		else if ("R".equals(this.rarity)) {
 			
 			return 200;
 			
 		}
 		
-		else if (this.rarity == "SR") {
+		else if ("SR".equals(this.rarity)) {
 			
 			return 500;
 			
 		}
 		
-		else if (this.rarity == "SSR") {
+		else if ("SSR".equals(this.rarity)) {
 			
 			return 750;
 			
 		}
 		
-		else if (this.rarity == "UR") {
+		else if ("UR".equals(this.rarity)) {
 			
 			return 1000;
 			
@@ -155,27 +359,21 @@ public class Card {
 			
 		}
 	}
+	
+	public String getName() {
+		return name;
+	}
 
-	private String skillType(JSONObject obj) throws JSONException {
-		if (this.rarity != "N") {
-			this.skillDetails = obj.getString("skill_details");
-			
-			if (this.skillDetails.contains("score")) {
-				return "Score";
-			}
-			
-			else if (this.skillDetails.contains("turning")) {
-				return "Perfect Lock";
-			}
-			
-			else {
-				return "Healer";
-			}
-		}
-		
-		else {
-			return "";
-		}
+	public String getYear() {
+		return year;
+	}
+
+	public String getMainUnit() {
+		return mainUnit;
+	}
+
+	public String getSubUnit() {
+		return subUnit;
 	}
 
 	public String getId() {
@@ -192,6 +390,10 @@ public class Card {
 
 	public int getBaseStat() {
 		return baseStat;
+	}
+	
+	public int getOffStat() {
+		return offStat;
 	}
 
 	public int getBondPoints() {

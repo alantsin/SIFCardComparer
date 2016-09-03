@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Control;
 
 public class CardComparisonWindow {
 
@@ -67,7 +68,7 @@ public class CardComparisonWindow {
 		shlSifCardStrength.setLayout(null);
 		
 		Label lblCard1ID = new Label(shlSifCardStrength, SWT.NONE);
-		lblCard1ID.setToolTipText("The 1st card's album number");
+		lblCard1ID.setToolTipText("The 1st card's #ID as seen on School Idol Tomodachi, NOT the in-game album number");
 		lblCard1ID.setBounds(5, 8, 48, 15);
 		lblCard1ID.setText("Card 1 ID");
 		
@@ -203,12 +204,12 @@ public class CardComparisonWindow {
 		comboMemberModifier.add("0% None");
 		comboMemberModifier.add("3% μ's Members");
 		comboMemberModifier.add("3% Aqours Members");
-		comboMemberModifier.add("6% 1st Year Students");
-		comboMemberModifier.add("6% 2nd Year Students");
-		comboMemberModifier.add("6% 3nd Year Students");
+		comboMemberModifier.add("6% First Year Students");
+		comboMemberModifier.add("6% Second Year Students");
+		comboMemberModifier.add("6% Third Year Students");
 		comboMemberModifier.add("6% Printemps Members");
-		comboMemberModifier.add("6% lily white Members");
-		comboMemberModifier.add("6% BiBi Members");
+		comboMemberModifier.add("6% Lily White Members");
+		comboMemberModifier.add("6% Bibi Members");
 		comboMemberModifier.add("6% CYaRon! Members");
 		comboMemberModifier.add("6% AZALEA Members");
 		comboMemberModifier.add("6% Guilty Kiss Members");
@@ -369,11 +370,13 @@ public class CardComparisonWindow {
 				
 				// Pass UserInput to CardComparison function
 				try {
+					
 					CardComparison cardComparison = new CardComparison(userInput);
 					cardComparison.getFinalAnswer();
 					
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
+					textResult.setText("Something went wrong! Please send @Umidahh a message on Twitter with a screenshot so it can be fixed!");
 					e.printStackTrace();
 				}
 
@@ -381,6 +384,8 @@ public class CardComparisonWindow {
 		});
 		btnCalculate.setBounds(5, 326, 64, 25);
 		btnCalculate.setText("Calculate!");
+		
+		shlSifCardStrength.setTabList(new Control[]{spinnerCard1, checkIdolized1, spinnerCard2, checkIdolized2, comboAttribute, comboSong, spinnerNoteCount, spinnerTime, spinnerPerfect, spinnerScore, comboStar, comboCenterSkill, comboMemberModifier, comboCard1SIS, comboCard2SIS, radioAverage, radioAbsolute, btnCalculate, textResult});
 		
 		
 	}
