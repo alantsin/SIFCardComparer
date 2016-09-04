@@ -20,23 +20,11 @@ public class GetCardJSON {
         return sb.toString();
     }
 
-	public JSONArray readJSONFromURL(UserInput userInput, int number) throws IOException {
+	public JSONArray readJSONFromURL(String apiNumber) throws IOException {
 		// Use School Idol Tomodachi's API to get card data
 		String baseURL = "http://schoolido.lu/api/cards/";
-		String URL;
-		
-		if (number == 1) {
+		String URL = baseURL + apiNumber;
 			
-			URL = baseURL + userInput.getCard1ID();
-			
-		}
-		
-		else {
-			
-			URL = baseURL + userInput.getCard2ID();
-			
-		}
-		
         InputStream is = new URL(URL).openStream();
         JSONArray json = null;
         try {

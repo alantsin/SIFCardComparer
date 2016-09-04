@@ -1,6 +1,6 @@
 public class BaseStatsCalculator {
 
-	private int finalStat;
+	private int finalBaseStats;
 	
 	public BaseStatsCalculator(Card card, UserInput userInput) {
 		
@@ -30,15 +30,26 @@ public class BaseStatsCalculator {
 			
 		}
 		
-	    finalStat = (int)Math.ceil((Math.ceil((initialStat + bond) * centerBoost)) * memberModifier);
-		System.out.println(Integer.toString(finalStat));
+		if (userInput.getCenterSkill().contains("12%")) {
+			
+			finalBaseStats = (int)Math.ceil((Math.ceil((initialStat + bond)) * memberModifier) + (centerBoost * card.getOffStat()));
+			
+		}
+		
+		else {
+			
+			finalBaseStats = (int)Math.ceil((Math.ceil((initialStat + bond) * memberModifier)) * centerBoost);
+			
+		}
+		
+		System.out.println(Integer.toString(finalBaseStats));
 	}
 
 	private double centerBoost(UserInput userInput) {
 
 		if(userInput.getCenterSkill().contains("12%")) {
 			
-			return 1.12;
+			return 0.12;
 			
 		}
 		
@@ -149,6 +160,10 @@ public class BaseStatsCalculator {
 			
 		}
 		
+	}
+	
+	public int getFinalBaseStats() {
+		return finalBaseStats;
 	}
 	
 }

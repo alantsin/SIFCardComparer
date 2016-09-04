@@ -26,16 +26,17 @@ public class CardComparison {
 		GetCardJSON cardJSON = new GetCardJSON();
 		
 		// GET for Card 1
-		JSONArray output1 = cardJSON.readJSONFromURL(userInput, 1);
+		JSONArray output1 = cardJSON.readJSONFromURL(userInput.getCard1ID());
 		card1 = new Card(output1, userInput, 1);
 		
 		// Calculate Base Stats of Card 1
 		BaseStatsCalculator base1 = new BaseStatsCalculator(card1, userInput);
 		
+		
 		// Calculate strength of Card 1
 		if ("Absolute".equals(userInput.getCalculationMethod())) {
 			
-			AbsoluteCalculator absoluteCalculator1 = new AbsoluteCalculator(card1, userInput);
+			AbsoluteCalculator absoluteCalculator1 = new AbsoluteCalculator(card1, userInput, base1.getFinalBaseStats());
 			
 			
 		}
@@ -47,8 +48,8 @@ public class CardComparison {
 		}
 		
 		// GET for Card 2 if required
-		if (!"0".equals(userInput.getCard2ID())) {
-			JSONArray output2 = cardJSON.readJSONFromURL(userInput, 2);
+		if (!"0".equals(userInput.getCard2ID()) && !userInput.getCard2ID().equals(userInput.getCard1ID())) {
+			JSONArray output2 = cardJSON.readJSONFromURL(userInput.getCard2ID());
 			card2 = new Card(output2, userInput, 2);
 			
 			isThereCard2 = true;
@@ -59,10 +60,15 @@ public class CardComparison {
 			// Calculate strength of Card 2
 				
 			if ("Absolute".equals(userInput.getCalculationMethod())) {
-				AbsoluteCalculator absoluteCalculator2 = new AbsoluteCalculator(card2, userInput);
+				
+				AbsoluteCalculator absoluteCalculator2 = new AbsoluteCalculator(card2, userInput, base2.getFinalBaseStats());
+				
 			}
+			
 			else {
+				
 				AverageCalculator averageCalculator2 = new AverageCalculator(card2, userInput);
+				
 			}
 				
 		}

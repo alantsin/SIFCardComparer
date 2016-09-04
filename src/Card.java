@@ -4,6 +4,8 @@ import org.json.JSONObject;
 
 public class Card {
 	
+	private int cardNumber;
+	
 	private String name;
 	private String year;
 	private String mainUnit;
@@ -13,6 +15,7 @@ public class Card {
 	private String cardAttribute;
 	
 	private String rarity;
+	private boolean promo;
 	
 	private int baseStat;
 	private int offStat;
@@ -22,14 +25,18 @@ public class Card {
 	private String skillType;
 	private String skillDetails;
 	
-	
-	
+
 	public Card(JSONArray cardJSON, UserInput userInput, int cardNumber) {
 		JSONObject card;
+		
+		this.cardNumber = cardNumber;
+		
 		try {
 			card = cardJSON.getJSONObject(0);
 			
 			this.rarity = card.getString("rarity");
+			
+			this.promo = card.getBoolean("is_promo");
 			
 			// GET idol information
 			
@@ -45,7 +52,7 @@ public class Card {
 			if (cardNumber == 1) {
 			
 				// If card 1 is idolized
-				if (userInput.getCard1Idolized()) {
+				if (userInput.getCard1Idolized() || this.promo) {
 					
 					this.baseStat = baseStatIdolized(userInput, card);
 					
@@ -72,7 +79,7 @@ public class Card {
 			else {
 				
 				// If card 2 is idolized
-				if (userInput.getCard2Idolized()) {
+				if (userInput.getCard2Idolized() || this.promo) {
 					
 					this.baseStat = baseStatIdolized(userInput, card);
 					
@@ -360,6 +367,10 @@ public class Card {
 		}
 	}
 	
+	public int getCardNumber() {
+		return cardNumber;
+	}
+	
 	public String getName() {
 		return name;
 	}
@@ -386,6 +397,10 @@ public class Card {
 
 	public String getRarity() {
 		return rarity;
+	}
+	
+	public boolean getPromo() {
+		return promo;
 	}
 
 	public int getBaseStat() {

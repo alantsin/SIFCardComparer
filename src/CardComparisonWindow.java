@@ -20,6 +20,8 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.ModifyEvent;
 
 public class CardComparisonWindow {
 
@@ -64,8 +66,68 @@ public class CardComparisonWindow {
 		shlSifCardStrength = new Shell();
 		shlSifCardStrength.setMinimumSize(new Point(550, 400));
 		shlSifCardStrength.setSize(550, 400);
-		shlSifCardStrength.setText("Love Live! School Idol Festival - Card Strength Calculator by Umidah");
+		shlSifCardStrength.setText("Love Live! School Idol Festival Card Strength Calculator by Umidah");
 		shlSifCardStrength.setLayout(null);
+		
+		Label lblScore = new Label(shlSifCardStrength, SWT.NONE);
+		lblScore.setToolTipText("Expected final score, required for Score-based skills");
+		lblScore.setBounds(178, 117, 29, 15);
+		lblScore.setText("Score");
+		lblScore.setVisible(false);
+		
+		Spinner spinnerScore = new Spinner(shlSifCardStrength, SWT.BORDER);
+		spinnerScore.setTextLimit(7);
+		spinnerScore.setMaximum(9999999);
+		spinnerScore.setIncrement(1000);
+		spinnerScore.setBounds(226, 114, 67, 22);
+		spinnerScore.setVisible(false);
+		
+		Label lblStarNotes = new Label(shlSifCardStrength, SWT.NONE);
+		lblStarNotes.setToolTipText("Star Note number, required for Star Note-based skills; daily songs are 1 difficulty higher, e.g. EX daily is Master");
+		lblStarNotes.setBounds(5, 145, 54, 15);
+		lblStarNotes.setText("Star Notes");
+		lblStarNotes.setVisible(false);
+		
+		Combo comboStar = new Combo(shlSifCardStrength, SWT.READ_ONLY);
+		comboStar.setToolTipText("");
+		comboStar.setBounds(115, 141, 178, 23);
+		
+		comboStar.add("Easy - 0 Star Notes");
+		comboStar.add("Normal - 15 Star Notes");
+		comboStar.add("Hard - 50 Star Notes");
+		comboStar.add("Expert - 65 Star Notes");
+		comboStar.add("Master - 70 Star Notes");
+		comboStar.setText("Easy - 0 Star Notes");
+		comboStar.setVisible(false);
+		
+		Label lblCard1SIS = new Label(shlSifCardStrength, SWT.NONE);
+		lblCard1SIS.setToolTipText("School Idol Skill for Card 1");
+		lblCard1SIS.setBounds(5, 229, 70, 15);
+		lblCard1SIS.setText("Card 1 SI Skill");
+		
+		Combo comboCard1SIS = new Combo(shlSifCardStrength, SWT.READ_ONLY);
+		comboCard1SIS.setBounds(115, 225, 178, 23);
+		
+		comboCard1SIS.add("0% None");
+		comboCard1SIS.add("250% Score Up Charm");
+		comboCard1SIS.add("270x HP Recover Heel");
+		comboCard1SIS.add("25% Stat Up PL Trick");
+		comboCard1SIS.setText("0% None");
+		
+		Label lblCard2SIS = new Label(shlSifCardStrength, SWT.NONE);
+		lblCard2SIS.setToolTipText("School Idol Skill for Card 2");
+		lblCard2SIS.setBounds(5, 257, 70, 15);
+		lblCard2SIS.setText("Card 2 SI Skill");
+		
+		Combo comboCard2SIS = new Combo(shlSifCardStrength, SWT.READ_ONLY);
+		comboCard2SIS.setBounds(115, 253, 178, 23);
+		
+		comboCard2SIS.add("0% None");
+		comboCard2SIS.add("250% Score Up Charm");
+		comboCard2SIS.add("270x HP Recover Heel");
+		comboCard2SIS.add("25% Stat Up PL Trick");
+		comboCard2SIS.setText("0% None");
+		comboCard2SIS.setEnabled(false);
 		
 		Label lblCard1ID = new Label(shlSifCardStrength, SWT.NONE);
 		lblCard1ID.setToolTipText("The 1st card's #ID as seen on School Idol Tomodachi, NOT the in-game album number");
@@ -73,6 +135,45 @@ public class CardComparisonWindow {
 		lblCard1ID.setText("Card 1 ID");
 		
 		Spinner spinnerCard1 = new Spinner(shlSifCardStrength, SWT.BORDER);
+		spinnerCard1.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent arg0) {
+				
+				if (spinnerCard1.getText() == "") {
+					return;
+				}
+				
+				switch(Integer.parseInt(spinnerCard1.getText())) {
+				
+				// Score-based skills
+				case 90:
+				case 107:
+				case 162:
+				case 182:
+				
+					lblScore.setVisible(true);
+					spinnerScore.setVisible(true);
+					break;
+		
+				// Star Note based skills
+				case 206:
+					
+					lblStarNotes.setVisible(true);
+					comboStar.setVisible(true);
+					break;
+					
+				default:
+					
+					lblScore.setVisible(false);
+					spinnerScore.setVisible(false);
+					lblStarNotes.setVisible(false);
+					comboStar.setVisible(false);
+				
+				}
+				
+			}
+		});
+		
+		
 		spinnerCard1.setTextLimit(4);
 		spinnerCard1.setBounds(115, 5, 57, 22);
 		spinnerCard1.setMaximum(9999);
@@ -90,6 +191,52 @@ public class CardComparisonWindow {
 		lblCard2ID.setText("Card 2 ID");
 		
 		Spinner spinnerCard2 = new Spinner(shlSifCardStrength, SWT.BORDER);
+		spinnerCard2.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent arg0) {
+				
+				if (spinnerCard2.getText() == "") {
+					return;
+				}
+				
+				switch(Integer.parseInt(spinnerCard2.getText())) {
+				
+				// No second card, hide Card 2 SIS
+				case 0:
+					
+					comboCard2SIS.setEnabled(false);
+					break;
+				
+				// Score-based skills
+				case 90:
+				case 107:
+				case 162:
+				case 182:
+					
+					comboCard2SIS.setEnabled(true);
+					lblScore.setVisible(true);
+					spinnerScore.setVisible(true);
+					break;
+				
+				// Star Note based skills
+				case 206:
+					
+					comboCard2SIS.setEnabled(true);
+					lblStarNotes.setVisible(true);
+					comboStar.setVisible(true);
+					break;
+					
+				default:
+					
+					comboCard2SIS.setEnabled(true);
+					lblScore.setVisible(false);
+					spinnerScore.setVisible(false);
+					lblStarNotes.setVisible(false);
+					comboStar.setVisible(false);
+				
+				}
+				
+			}
+		});
 		spinnerCard2.setTextLimit(4);
 		spinnerCard2.setBounds(115, 32, 57, 22);
 		spinnerCard2.setMaximum(9999);
@@ -123,6 +270,7 @@ public class CardComparisonWindow {
 		
 		comboSong.add("μ's");
 		comboSong.add("Aqours");
+		comboSong.add("None");
 		comboSong.setText("μ's");
 		
 		Label lblNoteCount = new Label(shlSifCardStrength, SWT.NONE);
@@ -158,34 +306,6 @@ public class CardComparisonWindow {
 		spinnerPerfect.setTextLimit(3);
 		spinnerPerfect.setBounds(115, 114, 57, 22);
 		spinnerPerfect.setSelection(75);
-		
-		Label lblScore = new Label(shlSifCardStrength, SWT.NONE);
-		lblScore.setToolTipText("Expected final score, required for Score-based skills");
-		lblScore.setBounds(178, 117, 29, 15);
-		lblScore.setText("Score");
-		
-		Spinner spinnerScore = new Spinner(shlSifCardStrength, SWT.BORDER);
-		spinnerScore.setTextLimit(7);
-		spinnerScore.setMaximum(9999999);
-		spinnerScore.setIncrement(1000);
-		spinnerScore.setBounds(226, 114, 67, 22);
-		
-		Label lblStarNotes = new Label(shlSifCardStrength, SWT.NONE);
-		lblStarNotes.setToolTipText("Star Note number, required for Star Note-based skills; daily songs are 1 difficulty higher, e.g. EX daily is Master");
-		lblStarNotes.setBounds(5, 145, 54, 15);
-		lblStarNotes.setText("Star Notes");
-		
-		
-		Combo comboStar = new Combo(shlSifCardStrength, SWT.READ_ONLY);
-		comboStar.setToolTipText("");
-		comboStar.setBounds(115, 141, 178, 23);
-		
-		comboStar.add("Easy - 0 Star Notes");
-		comboStar.add("Normal - 15 Star Notes");
-		comboStar.add("Hard - 50 Star Notes");
-		comboStar.add("Expert - 65 Star Notes");
-		comboStar.add("Master - 70 Star Notes");
-		comboStar.setText("Easy - 0 Star Notes");
 		
 		Text textResult = new Text(shlSifCardStrength, SWT.READ_ONLY | SWT.WRAP);
 		textResult.setFont(SWTResourceManager.getFont("Segoe UI", 9, SWT.NORMAL));
@@ -247,34 +367,6 @@ public class CardComparisonWindow {
 		comboCenterSkill.add("12% Cool based on Smile");
 		comboCenterSkill.add("12% Cool based on Pure");
 		comboCenterSkill.setText("0% None");
-		
-		Label lblCardSi = new Label(shlSifCardStrength, SWT.NONE);
-		lblCardSi.setToolTipText("School Idol Skill for Card 1");
-		lblCardSi.setBounds(5, 229, 70, 15);
-		lblCardSi.setText("Card 1 SI Skill");
-		
-		Combo comboCard1SIS = new Combo(shlSifCardStrength, SWT.READ_ONLY);
-		comboCard1SIS.setBounds(115, 225, 178, 23);
-		
-		comboCard1SIS.add("0% None");
-		comboCard1SIS.add("250% Score Up Charm");
-		comboCard1SIS.add("270x HP Recover Heel");
-		comboCard1SIS.add("25% Stat Up PL Trick");
-		comboCard1SIS.setText("0% None");
-		
-		Label lblCardSi_1 = new Label(shlSifCardStrength, SWT.NONE);
-		lblCardSi_1.setToolTipText("School Idol Skill for Card 2");
-		lblCardSi_1.setBounds(5, 257, 70, 15);
-		lblCardSi_1.setText("Card 2 SI Skill");
-		
-		Combo comboCard2SIS = new Combo(shlSifCardStrength, SWT.READ_ONLY);
-		comboCard2SIS.setBounds(115, 253, 178, 23);
-		
-		comboCard2SIS.add("0% None");
-		comboCard2SIS.add("250% Score Up Charm");
-		comboCard2SIS.add("270x HP Recover Heel");
-		comboCard2SIS.add("25% Stat Up PL Trick");
-		comboCard2SIS.setText("0% None");
 		
 		Label lblCalculationMethod = new Label(shlSifCardStrength, SWT.NONE);
 		lblCalculationMethod.setToolTipText("Choose which metric to calculate card strength by");
@@ -367,6 +459,19 @@ public class CardComparisonWindow {
 				userInput.setMemberModifier(comboMemberModifier.getText());
 				userInput.setCard1SIS(comboCard1SIS.getText());
 				userInput.setCard2SIS(comboCard2SIS.getText());
+				
+				if (radioAbsolute.getSelection()) {
+					
+					userInput.setCalculationMethod("Absolute");
+					
+				}
+				
+				else {
+					
+					userInput.setCalculationMethod("Average");
+					
+				}
+				
 				
 				// Pass UserInput to CardComparison function
 				try {
