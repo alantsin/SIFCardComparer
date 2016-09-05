@@ -6,6 +6,8 @@ public class Card {
 	
 	private int cardNumber;
 	
+	private boolean special;
+	
 	private String name;
 	private String year;
 	private String mainUnit;
@@ -16,7 +18,9 @@ public class Card {
 	
 	private String rarity;
 	private boolean promo;
+	private String collection;
 	
+	private String baseStatType;
 	private int baseStat;
 	private int offStat;
 	
@@ -34,9 +38,19 @@ public class Card {
 		try {
 			card = cardJSON.getJSONObject(0);
 			
+			this.special = card.getBoolean("is_special");
+			
+			if (this.special) {
+				
+				return;
+				
+			}
+			
 			this.rarity = card.getString("rarity");
 			
 			this.promo = card.getBoolean("is_promo");
+			
+			this.collection = card.getString("translated_collection");
 			
 			// GET idol information
 			
@@ -130,11 +144,13 @@ public class Card {
 	}
 
 	private void idolObject(JSONObject card) throws JSONException {
-		if (!"N".equals(this.rarity)) {
-			
+		
 		JSONObject idol = card.getJSONObject("idol");
 		this.name = idol.getString("name");
 		this.year = idol.getString("year");
+		
+		if (!"N".equals(this.rarity)) {
+			
 		this.mainUnit = idol.getString("main_unit");
 		this.subUnit = idol.getString("sub_unit");
 		
@@ -144,14 +160,17 @@ public class Card {
 	private int baseStatIdolized(UserInput userInput, JSONObject obj) throws JSONException {
 		// GET base stat
 		if ("Smile".equals(userInput.getAttribute())) {
+			this.baseStatType = "Smile";
 			return obj.getInt("idolized_maximum_statistics_smile");
 		}
 		
 		else if ("Pure".equals(userInput.getAttribute())) {
+			this.baseStatType = "Pure";
 			return obj.getInt("idolized_maximum_statistics_pure");
 		}
 		
 		else if ("Cool".equals(userInput.getAttribute())) {
+			this.baseStatType = "Cool";
 			return obj.getInt("idolized_maximum_statistics_cool");
 		}
 		
@@ -163,14 +182,17 @@ public class Card {
 	private int baseStatNotIdolized(UserInput userInput, JSONObject obj) throws JSONException {
 		// GET not idolized base stats
 		if ("Smile".equals(userInput.getAttribute())) {
+			this.baseStatType = "Smile";
 			return obj.getInt("non_idolized_maximum_statistics_smile");
 		}
 		
 		else if ("Pure".equals(userInput.getAttribute())) {
+			this.baseStatType = "Pure";
 			return obj.getInt("non_idolized_maximum_statistics_pure");
 		}
 		
 		else if ("Cool".equals(userInput.getAttribute())) {
+			this.baseStatType = "Cool";
 			return obj.getInt("non_idolized_maximum_statistics_cool");
 		}
 		
@@ -371,6 +393,10 @@ public class Card {
 		return cardNumber;
 	}
 	
+	public boolean getSpecial() {
+		return special;
+	}
+	
 	public String getName() {
 		return name;
 	}
@@ -401,6 +427,14 @@ public class Card {
 	
 	public boolean getPromo() {
 		return promo;
+	}
+	
+	public String getCollection() {
+		return collection;
+	}
+	
+	public String getBaseStatType() {
+		return baseStatType;
 	}
 
 	public int getBaseStat() {

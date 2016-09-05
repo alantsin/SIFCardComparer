@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.net.URL;
+import java.util.concurrent.TimeUnit;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -22,6 +23,9 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.TableColumn;
 
 public class CardComparisonWindow {
 
@@ -29,6 +33,13 @@ public class CardComparisonWindow {
 	private Label lblAttribute;
 	private Combo comboAttribute;
 	private Label lblNozomi;
+	
+	public static FinalInformation info1;
+	public static FinalInformation info2;
+	
+	private int tap;
+	
+	private Table table;
 
 	/**
 	 * Launch the application.
@@ -142,32 +153,32 @@ public class CardComparisonWindow {
 					return;
 				}
 				
-				switch(Integer.parseInt(spinnerCard1.getText())) {
 				
-				// Score-based skills
-				case 90:
-				case 107:
-				case 162:
-				case 182:
-				
-					lblScore.setVisible(true);
-					spinnerScore.setVisible(true);
-					break;
-		
-				// Star Note based skills
-				case 206:
+				// Check for special parameters
+				if (Integer.parseInt(spinnerCard1.getText()) == 90  ||
+				    Integer.parseInt(spinnerCard1.getText()) == 107 ||
+				    Integer.parseInt(spinnerCard1.getText()) == 162 ||
+					Integer.parseInt(spinnerCard1.getText()) == 182 || 
+					Integer.parseInt(spinnerCard1.getText()) == 206) 
+				{
 					
-					lblStarNotes.setVisible(true);
-					comboStar.setVisible(true);
-					break;
+					// If Star Note Umi
+					if (Integer.parseInt(spinnerCard1.getText()) == 206) {
+						
+						lblStarNotes.setVisible(true);
+						comboStar.setVisible(true);
+						
+					}
 					
-				default:
-					
-					lblScore.setVisible(false);
-					spinnerScore.setVisible(false);
-					lblStarNotes.setVisible(false);
-					comboStar.setVisible(false);
-				
+					// Else score-based skill
+					else {
+						
+						comboCard2SIS.setEnabled(true);
+						lblScore.setVisible(true);
+						spinnerScore.setVisible(true);
+						
+					}
+
 				}
 				
 			}
@@ -198,41 +209,40 @@ public class CardComparisonWindow {
 					return;
 				}
 				
-				switch(Integer.parseInt(spinnerCard2.getText())) {
-				
-				// No second card, hide Card 2 SIS
-				case 0:
-					
+				// No second card
+				if (Integer.parseInt(spinnerCard2.getText()) == 0) {
 					comboCard2SIS.setEnabled(false);
-					break;
+				}
 				
-				// Score-based skills
-				case 90:
-				case 107:
-				case 162:
-				case 182:
-					
+				else {
 					comboCard2SIS.setEnabled(true);
-					lblScore.setVisible(true);
-					spinnerScore.setVisible(true);
-					break;
+				}
 				
-				// Star Note based skills
-				case 206:
+				// Check for special parameters
+				if (Integer.parseInt(spinnerCard2.getText()) == 90  ||
+				    Integer.parseInt(spinnerCard2.getText()) == 107 ||
+				    Integer.parseInt(spinnerCard2.getText()) == 162 ||
+					Integer.parseInt(spinnerCard2.getText()) == 182 || 
+					Integer.parseInt(spinnerCard2.getText()) == 206) 
+				{
 					
-					comboCard2SIS.setEnabled(true);
-					lblStarNotes.setVisible(true);
-					comboStar.setVisible(true);
-					break;
+					// If Star Note Umi
+					if (Integer.parseInt(spinnerCard2.getText()) == 206) {
+						
+						lblStarNotes.setVisible(true);
+						comboStar.setVisible(true);
+						
+					}
 					
-				default:
-					
-					comboCard2SIS.setEnabled(true);
-					lblScore.setVisible(false);
-					spinnerScore.setVisible(false);
-					lblStarNotes.setVisible(false);
-					comboStar.setVisible(false);
-				
+					// Else score-based skill
+					else {
+						
+						comboCard2SIS.setEnabled(true);
+						lblScore.setVisible(true);
+						spinnerScore.setVisible(true);
+						
+					}
+
 				}
 				
 			}
@@ -309,8 +319,8 @@ public class CardComparisonWindow {
 		
 		Text textResult = new Text(shlSifCardStrength, SWT.READ_ONLY | SWT.WRAP);
 		textResult.setFont(SWTResourceManager.getFont("Segoe UI", 9, SWT.NORMAL));
-		textResult.setBounds(299, 141, 235, 184);
-		textResult.setText("Help Honoka with her studying by \r\ncalculating SIF card strength!\r\n\r\nHover your mouse over the labels to \r\nlearn about each field.\r\n\r\nYour results will show up here after you click the \"Calculate!\" button.");
+		textResult.setBounds(299, 169, 235, 182);
+		textResult.setText("Help Honoka with her studying by \r\ncalculating SIF card strength!\r\n\r\nHover your mouse over the labels to \r\nlearn about each field.\r\n\r\nYour results will show up on the bottom after you click the \"Calculate!\" button.");
 		
 		Label lblMemberModifier = new Label(shlSifCardStrength, SWT.NONE);
 		lblMemberModifier.setToolTipText("SIF 4.0 additional UR center skill based on member type");
@@ -375,25 +385,327 @@ public class CardComparisonWindow {
 		
 		Button radioAverage = new Button(shlSifCardStrength, SWT.RADIO);
 		radioAverage.setToolTipText("Takes the given Perfect % and the % skill activation chance");
+		radioAverage.setSelection(true);
 		radioAverage.setBounds(115, 292, 64, 16);
 		radioAverage.setText("Average");
 		
 		Button radioAbsolute = new Button(shlSifCardStrength, SWT.RADIO);
 		radioAbsolute.setToolTipText("Assumes 100% Perfects and 100% skill activation");
-		radioAbsolute.setSelection(true);
 		radioAbsolute.setBounds(226, 292, 68, 16);
 		radioAbsolute.setText("Absolute");
+		
+		Label lblCounter = new Label(shlSifCardStrength, SWT.CENTER);
+		lblCounter.setBounds(440, 145, 55, 15);
+		lblCounter.setText("0");
+		lblCounter.setVisible(false);
+		
+		Label lblAlpacaKing = new Label(shlSifCardStrength, SWT.NONE);
+		lblAlpacaKing.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDown(MouseEvent arg0) {
+				try {
+					URL url = this.getClass().getClassLoader().getResource("img/Alpaca.wav");
+					AudioInputStream audioIn = AudioSystem.getAudioInputStream(url);
+					Clip clip = AudioSystem.getClip();
+					clip.open(audioIn);
+					clip.start();
+					tap++;
+					lblCounter.setText(Integer.toString(tap));
+					lblCounter.setVisible(true);
+					
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+		});
+		lblAlpacaKing.setImage(SWTResourceManager.getImage(CardComparisonWindow.class, "/img/629RoundAlpaca.png"));
+		lblAlpacaKing.setBounds(404, 0, 130, 130);
+		lblAlpacaKing.setVisible(false);
+		
+		Label lblHanayo = new Label(shlSifCardStrength, SWT.NONE);
+		lblHanayo.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDown(MouseEvent arg0) {
+				try {
+					URL url;
+					if (tap < 666) {
+						url = this.getClass().getClassLoader().getResource("img/Hanayo.wav");
+					}
+					
+					else {
+						url = this.getClass().getClassLoader().getResource("img/Alpaca.wav");
+						lblHanayo.setVisible(false);
+						lblAlpacaKing.setVisible(true);
+						
+						spinnerCard1.setSelection(666);
+						spinnerCard1.setEnabled(false);
+						
+						checkIdolized1.setText("HELL");
+						checkIdolized1.setSelection(true);
+						checkIdolized1.setEnabled(false);
+						
+						checkIdolized2.setText("HELL");
+						checkIdolized2.setSelection(true);
+						checkIdolized2.setEnabled(false);
+						
+						spinnerCard2.setSelection(666);
+						spinnerCard2.setEnabled(false);
+						
+						comboAttribute.add("HELL");
+						comboAttribute.setText("HELL");
+						comboAttribute.setEnabled(false);
+						
+						comboSong.add("HELL");
+						comboSong.setText("HELL");
+						comboSong.setEnabled(false);
+						
+						spinnerNoteCount.setSelection(666);
+						spinnerNoteCount.setEnabled(false);
+						
+						spinnerTime.setMaximum(666);
+						spinnerTime.setSelection(666);
+						spinnerTime.setEnabled(false);
+						
+						spinnerPerfect.setMaximum(666);
+						spinnerPerfect.setSelection(666);
+						spinnerPerfect.setEnabled(false);
+						
+						comboCenterSkill.add("666%");
+						comboCenterSkill.setText("666%");
+						comboCenterSkill.setEnabled(false);
+						
+						comboMemberModifier.add("666%");
+						comboMemberModifier.setText("666%");
+						comboMemberModifier.setEnabled(false);
+						
+						comboCard1SIS.add("666%");
+						comboCard1SIS.setText("666%");
+						comboCard1SIS.setEnabled(false);
+						
+						comboCard2SIS.add("666%");
+						comboCard2SIS.setText("666%");
+						comboCard2SIS.setEnabled(false);
+						
+						radioAverage.setText("HELL");
+						radioAverage.setSelection(true);
+						radioAbsolute.setText("HELL");
+						radioAbsolute.setSelection(true);
+						
+						textResult.setText("WELCOME TO IDOL HELL");
+					}
+					
+					AudioInputStream audioIn = AudioSystem.getAudioInputStream(url);
+					Clip clip = AudioSystem.getClip();
+					clip.open(audioIn);
+					clip.start();
+					tap++;
+					lblCounter.setText(Integer.toString(tap));
+					lblCounter.setVisible(true);
+					
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+		});
+		lblHanayo.setImage(SWTResourceManager.getImage(CardComparisonWindow.class, "/img/843RoundIdolizedHanayo.png"));
+		lblHanayo.setBounds(404, 0, 130, 130);
+		lblHanayo.setVisible(false);
+		
+		Label lblRuby = new Label(shlSifCardStrength, SWT.NONE);
+		lblRuby.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDown(MouseEvent arg0) {
+				try {
+					URL url;
+					if (tap < 478) {
+						url = this.getClass().getClassLoader().getResource("img/Ruby.wav");
+					}
+					
+					else {
+						url = this.getClass().getClassLoader().getResource("img/Hanayo.wav");
+						lblRuby.setVisible(false);
+						lblHanayo.setVisible(true);
+						textResult.setText("Save me from KLab befor-");
+					}
+					
+					AudioInputStream audioIn = AudioSystem.getAudioInputStream(url);
+					Clip clip = AudioSystem.getClip();
+					clip.open(audioIn);
+					clip.start();
+					tap++;
+					lblCounter.setText(Integer.toString(tap));
+					lblCounter.setVisible(true);
+					
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+		});
+		lblRuby.setImage(SWTResourceManager.getImage(CardComparisonWindow.class, "/img/985RoundRuby.png"));
+		lblRuby.setBounds(404, 0, 130, 130);
+		lblRuby.setVisible(false);
+		
+		Label lblURNico = new Label(shlSifCardStrength, SWT.NONE);
+		lblURNico.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDown(MouseEvent arg0) {
+				try {
+					URL url;
+					if (tap < 333) {
+						url = this.getClass().getClassLoader().getResource("img/LoveNico.wav");
+					}
+					
+					else {
+						url = this.getClass().getClassLoader().getResource("img/Ruby.wav");
+						lblURNico.setVisible(false);
+						lblRuby.setVisible(true);
+						textResult.setText("Ruby says:\r\nYou should stop while you're at your Rubesty!");
+					}
+					
+					AudioInputStream audioIn = AudioSystem.getAudioInputStream(url);
+					Clip clip = AudioSystem.getClip();
+					clip.open(audioIn);
+					clip.start();
+					tap++;
+					lblCounter.setText(Integer.toString(tap));
+					lblCounter.setVisible(true);
+					
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+		});
+		lblURNico.setImage(SWTResourceManager.getImage(CardComparisonWindow.class, "/img/909RoundNico.png"));
+		lblURNico.setBounds(404, 0, 130, 130);
+		lblURNico.setVisible(false);
+		
+		Label lblAlpaca = new Label(shlSifCardStrength, SWT.NONE);
+		lblAlpaca.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDown(MouseEvent arg0) {
+				try {
+					URL url;
+					if (tap < 251) {
+						url = this.getClass().getClassLoader().getResource("img/Alpaca.wav");
+					}
+					
+					else {
+						url = this.getClass().getClassLoader().getResource("img/LoveNico.wav");
+						lblAlpaca.setVisible(false);
+						lblURNico.setVisible(true);
+						textResult.setText("Nico says:\r\nDon't you have anything better to do!?");
+					}
+					
+					AudioInputStream audioIn = AudioSystem.getAudioInputStream(url);
+					Clip clip = AudioSystem.getClip();
+					clip.open(audioIn);
+					clip.start();
+					tap++;
+					lblCounter.setText(Integer.toString(tap));
+					lblCounter.setVisible(true);
+					
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+		});
+		lblAlpaca.setImage(SWTResourceManager.getImage(CardComparisonWindow.class, "/img/83RoundAlpaca.png"));
+		lblAlpaca.setBounds(404, 0, 130, 130);
+		lblAlpaca.setVisible(false);
+		
+		Label lblYou = new Label(shlSifCardStrength, SWT.NONE);
+		lblYou.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDown(MouseEvent arg0) {
+				try {
+					URL url;
+					if (tap < 100) {
+						url = this.getClass().getClassLoader().getResource("img/You.wav");
+					}
+					
+					else {
+						url = this.getClass().getClassLoader().getResource("img/Alpaca.wav");
+						lblYou.setVisible(false);
+						lblAlpaca.setVisible(true);
+						textResult.setText("Nothing to see here~");
+					}
+					
+					AudioInputStream audioIn = AudioSystem.getAudioInputStream(url);
+					Clip clip = AudioSystem.getClip();
+					clip.open(audioIn);
+					clip.start();
+					tap++;
+					lblCounter.setText(Integer.toString(tap));
+					lblCounter.setVisible(true);
+					
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+		});
+		lblYou.setImage(SWTResourceManager.getImage(CardComparisonWindow.class, "/img/957RoundIdolizedYou.png"));
+		lblYou.setBounds(404, 0, 130, 130);
+		lblYou.setVisible(false);
+		
+		Label lblSRNico = new Label(shlSifCardStrength, SWT.NONE);
+		lblSRNico.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDown(MouseEvent arg0) {
+				try {
+					URL url;
+					if (tap < 44) {
+						url = this.getClass().getClassLoader().getResource("img/Nico.wav");
+					}
+					
+					else {
+						url = this.getClass().getClassLoader().getResource("img/You.wav");
+						lblSRNico.setVisible(false);
+						lblYou.setVisible(true);
+						textResult.setText("You says:\r\nYosoro~ You've reached the final stop! Why not try using the calculator for its intended purpose now?");
+					}
+					
+					AudioInputStream audioIn = AudioSystem.getAudioInputStream(url);
+					Clip clip = AudioSystem.getClip();
+					clip.open(audioIn);
+					clip.start();
+					tap++;
+					lblCounter.setText(Integer.toString(tap));
+					lblCounter.setVisible(true);
+					
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+		});
+		lblSRNico.setImage(SWTResourceManager.getImage(CardComparisonWindow.class, "/img/899RoundNico.png"));
+		lblSRNico.setBounds(404, 0, 130, 130);
+		lblSRNico.setVisible(false);
 		
 		Label lblHonoka = new Label(shlSifCardStrength, SWT.NONE);
 		lblHonoka.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(MouseEvent arg0) {
 				try {
-					URL url = this.getClass().getClassLoader().getResource("img/Blah.wav");
+					URL url;
+					if (tap < 25) {
+						url = this.getClass().getClassLoader().getResource("img/Blah.wav");
+					}
+					
+					else {
+						url = this.getClass().getClassLoader().getResource("img/Nico.wav");
+						lblHonoka.setVisible(false);
+						lblSRNico.setVisible(true);
+						textResult.setText("Nico says:\r\nNico Nico Nii~ I Nico Nico Need you to help me with my homework by using the calculator!");
+					}
+					
 					AudioInputStream audioIn = AudioSystem.getAudioInputStream(url);
 					Clip clip = AudioSystem.getClip();
 					clip.open(audioIn);
 					clip.start();
+					tap++;
+					lblCounter.setText(Integer.toString(tap));
+					lblCounter.setVisible(true);
+					
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
@@ -408,13 +720,95 @@ public class CardComparisonWindow {
 		lblNozomi.setBounds(404, 0, 130, 130);
 		lblNozomi.setVisible(false);
 		
+		// Render results table
+		table = new Table(shlSifCardStrength, SWT.BORDER | SWT.FULL_SELECTION);
+		table.setHeaderVisible(true);
+		table.setLinesVisible(true);
+		table.setBounds(17, 380, 500, 142);
+		
+		TableColumn tblclmnResult = new TableColumn(table, SWT.NONE);
+		tblclmnResult.setWidth(125);
+		tblclmnResult.setText("Result");
+	    
+	    TableColumn tblclmnCard1 = new TableColumn(table, SWT.NONE);
+	    tblclmnCard1.setWidth(123);
+	    tblclmnCard1.setText("Card 1");
+	    
+	    TableColumn tblclmnCard2 = new TableColumn(table, SWT.NONE);
+	    tblclmnCard2.setWidth(123);
+	    tblclmnCard2.setText("Card 2");
+	    
+	    TableColumn tblclmnDifference = new TableColumn(table, SWT.NONE);
+	    tblclmnDifference.setWidth(125);
+	    tblclmnDifference.setText("Difference");
+	    
+		// Render 1 card   
+	    String cardName[] = { "Card Name" };
+	    
+	    TableItem tableItemCardName = new TableItem(table, SWT.NONE);
+	    tableItemCardName.setText(cardName);
+	    
+	    String collection[] = { "Collection" };
+	    
+	    TableItem tableItemCollection = new TableItem(table, SWT.NONE);
+	    tableItemCollection.setText(collection);
+	    
+	    String baseStat[] = { "Base Stat" }; 
+	    
+	    TableItem tableItemBaseStat = new TableItem(table, SWT.NONE);
+	    tableItemBaseStat.setText(baseStat);
+	
+	    String scoreContribution[] = { "Score Contribution" };
+	    
+	    TableItem tableItemScoreContribution = new TableItem(table, SWT.NONE);
+	    tableItemScoreContribution.setText(scoreContribution);
+	    
+	    String skillContribution[] = { "Skill Contribution" };
+	    
+	 
+	    TableItem tableItemSkillContribution = new TableItem(table, SWT.NONE);
+	    tableItemSkillContribution.setText(skillContribution);
+	    
+	    String finalScore[] = { "Final Score" };
+	    
+	    TableItem tableItemFinalScore = new TableItem(table, SWT.NONE);
+	    tableItemFinalScore.setText(finalScore);
+	    
 		Button btnCalculate = new Button(shlSifCardStrength, SWT.NONE);
 		btnCalculate.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
-				lblHonoka.setVisible(false);
-				lblNozomi.setVisible(true);
-				textResult.setText("Nozomi says:\r\nStop making the UI look nice\r\nand code the actual program!");
+				
+				if (tap >= 15) {
+					
+					for (int i = 1; i <= 666; i++) {
+						
+						try {
+							URL url = this.getClass().getClassLoader().getResource("img/Alpaca.wav");
+							AudioInputStream audioIn = AudioSystem.getAudioInputStream(url);
+							Clip clip = AudioSystem.getClip();
+							clip.open(audioIn);
+							clip.start();
+							
+						} catch (Exception ex) {
+							ex.printStackTrace();
+						}
+						
+					}
+					
+					try {
+						TimeUnit.SECONDS.sleep(2);
+						System.exit(0);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+					return;
+					
+				}
+				
+				lblCounter.setVisible(false);
 				
 				// Take user input and set it to one UserInput object
 				userInput.setCard1ID(Integer.toString(spinnerCard1.getSelection()));
@@ -429,7 +823,7 @@ public class CardComparisonWindow {
 				userInput.setNoteCount(spinnerNoteCount.getSelection());
 				userInput.setTime(spinnerTime.getSelection());
 				
-				// Convert Perfect interger to % double
+				// Convert Perfect integer to % double
 				userInput.setPerfectPercent(spinnerPerfect.getSelection() * 0.01);
 				userInput.setFinalScore(spinnerScore.getSelection());
 				
@@ -461,23 +855,269 @@ public class CardComparisonWindow {
 				userInput.setCard2SIS(comboCard2SIS.getText());
 				
 				if (radioAbsolute.getSelection()) {
-					
 					userInput.setCalculationMethod("Absolute");
-					
 				}
 				
 				else {
-					
 					userInput.setCalculationMethod("Average");
-					
 				}
-				
 				
 				// Pass UserInput to CardComparison function
 				try {
-					
 					CardComparison cardComparison = new CardComparison(userInput);
-					cardComparison.getFinalAnswer();
+					
+					
+					if (cardComparison.getOver()) {	
+						textResult.setText("Honoka says:\r\nYou picked a card ID that doesn't exist!");
+						
+						try {
+							URL url = this.getClass().getClassLoader().getResource("img/Honoka.wav");
+							AudioInputStream audioIn = AudioSystem.getAudioInputStream(url);
+							Clip clip = AudioSystem.getClip();
+							clip.open(audioIn);
+							clip.start();
+							
+						} catch (Exception ex) {
+							ex.printStackTrace();
+						}
+						
+					}
+					
+					else if (cardComparison.getSpecial()) {
+						textResult.setText("Honoka says:\r\nYou picked a card ID that can't be put on your team!");
+						
+						try {
+							URL url = this.getClass().getClassLoader().getResource("img/Honoka.wav");
+							AudioInputStream audioIn = AudioSystem.getAudioInputStream(url);
+							Clip clip = AudioSystem.getClip();
+							clip.open(audioIn);
+							clip.start();
+							
+						} catch (Exception ex) {
+							ex.printStackTrace();
+						}
+						
+					}
+					
+					else {
+						
+						lblHonoka.setVisible(false);
+						lblNozomi.setVisible(true);
+						shlSifCardStrength.setSize(550, 600);
+						
+						// If two cards
+						if (info1 != info2) {
+							
+							URL url;
+							
+							DifferenceInformation difference = new DifferenceInformation(info1, info2);
+							
+							// Render both cards and compare   
+						    String cardName[] = { "Card Name", 
+						    					  cardComparison.getCard1().getName(), 
+						    					  cardComparison.getCard2().getName()};
+						    
+						    tableItemCardName.setText(cardName);
+						    
+						    String collection[] = { "Collection", 
+						    						cardComparison.getCard1().getCollection(), 
+						    						cardComparison.getCard2().getCollection() };
+						    
+						    tableItemCollection.setText(collection);
+						    
+						    String baseStat[] = { "Base Stat", 
+						    					  info1.getFinalBaseStats(), 
+						    					  info2.getFinalBaseStats(), difference.getFinalBaseStatsDifference()}; 
+
+						    tableItemBaseStat.setText(baseStat);
+						
+						    String scoreContribution[] = { "Score Contribution", 
+						    		 					   info1.getScoreContribution(), 
+						    		 					   info2.getScoreContribution(), difference.getScoreContributionDifference() };
+
+						    tableItemScoreContribution.setText(scoreContribution);
+						    
+						    String skillContribution[] = { "Skill Contribution", 
+						    							   info1.getSkillContribution(),
+						    							   info2.getSkillContribution(),
+						    							   difference.getSkillContributionDifference() };
+
+						    tableItemSkillContribution.setText(skillContribution);
+						    
+						    String finalScore[] = { "Final Score",
+						    						info1.getFinalScore(), 
+						    						info2.getFinalScore(), 
+						    						difference.getFinalScoreDifference()};
+
+						    tableItemFinalScore.setText(finalScore);
+						    
+						    // Nozomi's evaluation
+						    String evaluation = "Nozomi's evaluation:\r\n\r\nHere is the breakdown for your cards.\r\n\r\n";
+						    int card1Counter = 0;
+						    int card2Counter = 0;
+						    
+						    // Evaluate Score Contribution
+						    if (Integer.parseInt(info1.getScoreContribution()) > Integer.parseInt(info2.getScoreContribution())) {
+						    	card1Counter++;
+						    	evaluation = evaluation + "Card 1's Score Contribution is better than Card 2's.\r\n";
+						    }
+						    
+						    else if (Integer.parseInt(info1.getScoreContribution()) < Integer.parseInt(info2.getScoreContribution())) {
+						    	card2Counter++;
+						    	evaluation = evaluation + "Card 2's Score Contribution is better than Card 1's.\r\n";
+						    }
+						    
+						    else {
+						    	evaluation = evaluation + "Both cards have the same Score Contribution!\r\n";
+						    }
+						    
+						    // Evaluate Skill Contribution
+						    if (Integer.parseInt(info1.getSkillContribution()) > Integer.parseInt(info2.getSkillContribution())) {
+						    	
+						    	if (card1Counter > 0) {
+						    		card1Counter++;
+						    		evaluation = evaluation + "Card 1's Skill Contribution is also better.\r\n";
+						    	}
+						    	
+						    	else  {
+						    		card2Counter++;
+						    		evaluation = evaluation + "However, Card 2 has the better Skill Contribution.\r\n";
+						    	}
+						    	
+						    }
+						    
+						    else if (Integer.parseInt(info1.getSkillContribution()) < Integer.parseInt(info2.getSkillContribution())) {
+						    	
+						    	if (card2Counter > 0) {
+						    		card2Counter++;
+						    		evaluation = evaluation + "Card 2's Skill Contribution is also better.\r\n";
+						    	}
+						    	
+						    	else  {
+						    		card1Counter++;
+						    		evaluation = evaluation + "However, Card 1 has the better Skill Contribution.\r\n";
+						    	}
+						    	
+						    	
+						    }
+						    
+						    else {
+						    	evaluation = evaluation + "Both cards have the same Skill Contribution!\r\n";
+						    }
+						    
+						    // Evaluate Final Score
+						    if (Integer.parseInt(info1.getFinalScore()) > Integer.parseInt(info2.getFinalScore())) {
+						    	evaluation = evaluation + "Overall, Card 1 is the stronger card under these conditions.\r\n\r\n";
+								url = this.getClass().getClassLoader().getResource("img/NozomiEvaluation.wav");
+						    }
+						    
+						    else if (Integer.parseInt(info1.getFinalScore()) < Integer.parseInt(info2.getFinalScore())) {
+						    	evaluation = evaluation + "Overall, Card 2 is the stronger card under these conditions.\r\n\r\n";
+						    	url = this.getClass().getClassLoader().getResource("img/NozomiEvaluation.wav");
+						    }
+						    
+						    else {
+							    evaluation = evaluation + "It looks like these two cards are evenly matched!\r\n\r\n";
+								url = this.getClass().getClassLoader().getResource("img/NozomiTie.wav");
+						    }
+						    
+						    // Final words
+						    if ("Absolute".equals(userInput.getCalculationMethod())) {
+						    	evaluation = evaluation + "This is the best case scenario, though. Try calculating using Average for more realistic results!";
+						    }
+						    
+						    else {
+						    	evaluation = evaluation + "This is the average scenario, though. Try calculating using Absolute to see the cards' true potential!";
+						    }
+						    
+						    textResult.setFont(SWTResourceManager.getFont("Segoe UI", 8, SWT.NORMAL));
+						    textResult.setText(evaluation);
+						    
+							try {
+								AudioInputStream audioIn = AudioSystem.getAudioInputStream(url);
+								Clip clip = AudioSystem.getClip();
+								clip.open(audioIn);
+								clip.start();
+								
+							} catch (Exception ex) {
+								ex.printStackTrace();
+							}
+							
+						}
+						
+						// Else render 1 card
+						else {
+							
+							// Render 1 card   
+						    String cardName[] = { "Card Name", 
+						    					  cardComparison.getCard1().getName() };
+						    
+						    tableItemCardName.setText(cardName);
+						    
+						    String collection[] = { "Collection", 
+						    						cardComparison.getCard1().getCollection() };
+						    
+						    tableItemCollection.setText(collection);
+						    
+						    String baseStat[] = { "Base Stat", 
+						    					  info1.getFinalBaseStats() }; 
+						    
+						    tableItemBaseStat.setText(baseStat);
+						
+						    String scoreContribution[] = { "Score Contribution", 
+						    		 					   info1.getScoreContribution() };
+						    
+						    tableItemScoreContribution.setText(scoreContribution);
+						    
+						    String skillContribution[] = { "Skill Contribution", 
+						    							   info1.getSkillContribution() };
+						    
+						 
+						    tableItemSkillContribution.setText(skillContribution);
+						    
+						    String finalScore[] = { "Final Score",
+						    						info1.getFinalScore() };
+						    
+						    tableItemFinalScore.setText(finalScore);
+						    
+						    textResult.setFont(SWTResourceManager.getFont("Segoe UI", 8, SWT.NORMAL));
+						    
+						    if (userInput.getCard1ID().equals(userInput.getCard2ID())) {
+							    textResult.setText("Nozomi's evaluation:\r\n\r\nDid you know that Insanity is doing the same thing over and over again and expecting different results?");
+							    
+								try {
+									URL url = this.getClass().getClassLoader().getResource("img/NozomiFail.wav");
+									AudioInputStream audioIn = AudioSystem.getAudioInputStream(url);
+									Clip clip = AudioSystem.getClip();
+									clip.open(audioIn);
+									clip.start();
+									
+								} catch (Exception ex) {
+									ex.printStackTrace();
+								}
+							    
+						    }
+						    
+						    else {
+							    textResult.setText("Nozomi's evaluation:\r\n\r\nHere is the breakdown for your card.\r\n\r\nTry comparing it with other cards to see how strong it really is!");
+							    
+								try {
+									URL url = this.getClass().getClassLoader().getResource("img/NozomiEvaluation.wav");
+									AudioInputStream audioIn = AudioSystem.getAudioInputStream(url);
+									Clip clip = AudioSystem.getClip();
+									clip.open(audioIn);
+									clip.start();
+									
+								} catch (Exception ex) {
+									ex.printStackTrace();
+								}
+								
+						    }
+							
+						}
+						
+						
+					}
 					
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
@@ -487,7 +1127,7 @@ public class CardComparisonWindow {
 
 			}
 		});
-		btnCalculate.setBounds(5, 326, 64, 25);
+		btnCalculate.setBounds(5, 315, 64, 25);
 		btnCalculate.setText("Calculate!");
 		
 		shlSifCardStrength.setTabList(new Control[]{spinnerCard1, checkIdolized1, spinnerCard2, checkIdolized2, comboAttribute, comboSong, spinnerNoteCount, spinnerTime, spinnerPerfect, spinnerScore, comboStar, comboCenterSkill, comboMemberModifier, comboCard1SIS, comboCard2SIS, radioAverage, radioAbsolute, btnCalculate, textResult});

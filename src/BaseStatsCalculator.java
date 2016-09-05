@@ -10,6 +10,8 @@ public class BaseStatsCalculator {
 		double centerBoost;
 		double memberModifier;
 		
+		
+		// If song attribute matches card attribute
 		if (userInput.getAttribute().equals(card.getCardAttribute())) {
 			bond = card.getBondPoints();
 		}
@@ -18,7 +20,7 @@ public class BaseStatsCalculator {
 			bond = 0;
 		}
 		
-		centerBoost = centerBoost(userInput);
+		centerBoost = centerBoost(card, userInput);
 		
 		if (!"N".equals(card.getRarity())) {
 			memberModifier = memberModifier(card, userInput);
@@ -42,20 +44,44 @@ public class BaseStatsCalculator {
 			
 		}
 		
-		System.out.println(Integer.toString(finalBaseStats));
 	}
 
-	private double centerBoost(UserInput userInput) {
+	private double centerBoost(Card card, UserInput userInput) {
 
 		if(userInput.getCenterSkill().contains("12%")) {
 			
-			return 0.12;
+			if (userInput.getCenterSkill().contains("12% Smile") && "Smile".equals(userInput.getAttribute()) ||
+				userInput.getCenterSkill().contains("12% Pure") &&  "Pure".equals(userInput.getAttribute())  ||	
+				userInput.getCenterSkill().contains("12% Cool") &&  "Cool".equals(userInput.getAttribute())) {
+				
+				return 0.12;
+				
+				
+			}
+			
+			else {
+				
+				return 0;
+				
+			}
 			
 		}
 		
 		else if(userInput.getCenterSkill().contains("9%")) {
 			
-			return 1.09;
+			if (userInput.getCenterSkill().contains("Smile") && "Smile".equals(card.getBaseStatType()) && "Smile".equals(userInput.getAttribute()) ||
+				userInput.getCenterSkill().contains("Pure")  && "Pure".equals(card.getBaseStatType())  && "Pure".equals(userInput.getAttribute())  ||
+				userInput.getCenterSkill().contains("Cool")  && "Cool".equals(card.getBaseStatType())  && "Cool".equals(userInput.getAttribute())) {
+				
+				return 1.09;
+		
+			}
+			
+			else {
+				
+				return 1;
+				
+			}
 			
 		}
 		
