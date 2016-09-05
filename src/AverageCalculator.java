@@ -185,7 +185,6 @@ private int noteCount;
 			
 				else {
 					// Card too low rarity to consider SIS, calculate normally
-					System.out.println("Low rarity");
 					skillContribution = skillCalculator(skillParser);
 				}
 				
@@ -193,7 +192,6 @@ private int noteCount;
 			
 			else {
 				// Card too low rarity to consider SIS, calculate normally
-				System.out.println("Low rarity");
 				skillContribution = skillCalculator(skillParser);
 			}
 			
@@ -201,7 +199,6 @@ private int noteCount;
 		
 		// Else no SIS, calculate normally
 		else {
-			System.out.println("No SIS");
 			skillContribution = skillCalculator(skillParser);
 		}
 	}
@@ -273,8 +270,9 @@ private int noteCount;
 					
 			}
 				
+			// Else no SIS applicable, calculate normally
 			else {	
-				return 0;	
+				return skillCalculator(skillParser);	
 			}
 			
 		}
