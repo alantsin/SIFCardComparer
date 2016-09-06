@@ -428,7 +428,7 @@ public class CardComparisonWindow {
 			public void mouseDown(MouseEvent arg0) {
 				try {
 					URL url;
-					if (tap < 666) {
+					if (tap < 665) {
 						url = this.getClass().getClassLoader().getResource("img/Hanayo.wav");
 					}
 					
@@ -517,7 +517,7 @@ public class CardComparisonWindow {
 			public void mouseDown(MouseEvent arg0) {
 				try {
 					URL url;
-					if (tap < 478) {
+					if (tap < 477) {
 						url = this.getClass().getClassLoader().getResource("img/Ruby.wav");
 					}
 					
@@ -551,7 +551,7 @@ public class CardComparisonWindow {
 			public void mouseDown(MouseEvent arg0) {
 				try {
 					URL url;
-					if (tap < 333) {
+					if (tap < 332) {
 						url = this.getClass().getClassLoader().getResource("img/LoveNico.wav");
 					}
 					
@@ -619,7 +619,7 @@ public class CardComparisonWindow {
 			public void mouseDown(MouseEvent arg0) {
 				try {
 					URL url;
-					if (tap < 100) {
+					if (tap < 99) {
 						url = this.getClass().getClassLoader().getResource("img/You.wav");
 					}
 					
@@ -653,7 +653,7 @@ public class CardComparisonWindow {
 			public void mouseDown(MouseEvent arg0) {
 				try {
 					URL url;
-					if (tap < 44) {
+					if (tap < 43) {
 						url = this.getClass().getClassLoader().getResource("img/Nico.wav");
 					}
 					
@@ -687,7 +687,7 @@ public class CardComparisonWindow {
 			public void mouseDown(MouseEvent arg0) {
 				try {
 					URL url;
-					if (tap < 25) {
+					if (tap < 24) {
 						url = this.getClass().getClassLoader().getResource("img/Blah.wav");
 					}
 					
@@ -779,7 +779,7 @@ public class CardComparisonWindow {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
 				
-				if (tap >= 15) {
+				if (tap >= 666) {
 					
 					for (int i = 1; i <= 666; i++) {
 						
@@ -974,30 +974,25 @@ public class CardComparisonWindow {
 						    // Evaluate Skill Contribution
 						    if (Integer.parseInt(info1.getSkillContribution()) > Integer.parseInt(info2.getSkillContribution())) {
 						    	
-						    	if (card1Counter > 0) {
-						    		card1Counter++;
+						    	if (card1Counter == 1) {
 						    		evaluation = evaluation + "Card 1's Skill Contribution is also better.\r\n";
 						    	}
 						    	
 						    	else  {
-						    		card2Counter++;
-						    		evaluation = evaluation + "However, Card 2 has the better Skill Contribution.\r\n";
+						    		evaluation = evaluation + "However, Card 1 has the better Skill Contribution.\r\n";
 						    	}
 						    	
 						    }
 						    
 						    else if (Integer.parseInt(info1.getSkillContribution()) < Integer.parseInt(info2.getSkillContribution())) {
 						    	
-						    	if (card2Counter > 0) {
-						    		card2Counter++;
+						    	if (card2Counter == 1) {
 						    		evaluation = evaluation + "Card 2's Skill Contribution is also better.\r\n";
 						    	}
 						    	
 						    	else  {
-						    		card1Counter++;
-						    		evaluation = evaluation + "However, Card 1 has the better Skill Contribution.\r\n";
+						    		evaluation = evaluation + "However, Card 2 has the better Skill Contribution.\r\n";
 						    	}
-						    	
 						    	
 						    }
 						    
