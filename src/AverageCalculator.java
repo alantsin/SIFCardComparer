@@ -17,11 +17,18 @@ private int noteCount;
 	
 	private double groupMultiplier = 1.00;
 	
+//  How many divisions of Great to Perfect
+	private int level;
+	
+	private double totalNotesConverted;
+	
+	boolean isPerfectLockCard;
+	
 	private double scoreContribution;
 	
 	private int skillFrequency;
 	
-	private double skillContribution;
+	private double skillContribution = 0;
 	
 	private int finalScore;
 	
@@ -41,6 +48,20 @@ private int noteCount;
 				groupMultiplier = 1.10;			
 			}
 		
+		}
+		
+		if (card.getSkillType().contains("Perfect")) {
+
+			SkillParser skillParser = new SkillParser(card.getSkillDetails());
+			
+			skillFrequency = skillFrequency(userInput, skillParser);
+			
+			double greatsPerSecond = (userInput.getNoteCount() * (1 - perfectPercentage)) / userInput.getTime();
+			
+			totalNotesConverted = Math.min(userInput.getNoteCount(), (skillParser.getActivationResultNumber() * skillFrequency) * greatsPerSecond);
+			
+			isPerfectLockCard = true;
+			
 		}
 		
 		scoreContribution = scoreContribution(userInput, finalBaseStats);
@@ -149,21 +170,21 @@ private int noteCount;
 			
 				else {
 					// Card too low rarity to consider SIS, calculate normally
-					skillContribution = skillCalculator(skillParser);
+					skillContribution = skillCalculator(skillParser, userInput);
 				}
 				
 			}
 			
 			else {
 				// Card too low rarity to consider SIS, calculate normally
-				skillContribution = skillCalculator(skillParser);
+				skillContribution = skillCalculator(skillParser, userInput);
 			}
 			
 		}
 		
 		// Else no SIS, calculate normally
 		else {
-			skillContribution = skillCalculator(skillParser);
+			skillContribution = skillCalculator(skillParser, userInput);
 		}
 		
 	}
@@ -185,32 +206,34 @@ private int noteCount;
 			
 				else {
 					// Card too low rarity to consider SIS, calculate normally
-					skillContribution = skillCalculator(skillParser);
+					skillContribution = skillCalculator(skillParser, userInput);
 				}
 				
 			}
 			
 			else {
 				// Card too low rarity to consider SIS, calculate normally
-				skillContribution = skillCalculator(skillParser);
+				skillContribution = skillCalculator(skillParser, userInput);
 			}
 			
 		}
 		
 		// Else no SIS, calculate normally
 		else {
-			skillContribution = skillCalculator(skillParser);
+			skillContribution = skillCalculator(skillParser, userInput);
 		}
 	}
 	
-	private double skillCalculator(SkillParser skillParser) {
+	private double skillCalculator(SkillParser skillParser, UserInput userInput) {
 		
+		// Return skill contribution
 		if (skillParser.getActivationResult().contains("score")) {
 			return Math.round(skillParser.getProbability() * skillFrequency) * skillParser.getActivationResultNumber();
 		}
 		
+		// Return current contribution
 		else {
-			return 0;
+			return skillContribution;
 		}
 		
 	}
@@ -223,26 +246,26 @@ private int noteCount;
 			if (userInput.getCard1SIS().contains("250%") && skillParser.getActivationResult().contains("score")) {
 				return Math.round(skillParser.getProbability() * skillFrequency) * (skillParser.getActivationResultNumber() * 2.5);
 			}
-			
+			// 270x Heel
 			else if (userInput.getCard1SIS().contains("270x") && skillParser.getActivationResult().contains("HP")) {
 				return Math.round(skillParser.getProbability() * skillFrequency) * (skillParser.getActivationResultNumber() * 270);
 			}
-			
+			// 25% Trick
 			else if (userInput.getCard1SIS().contains("25%") && skillParser.getActivationResult().contains("seconds")) {
 					
 				double boostFrequency = Math.min(1, skillParser.getProbability() * 
 													(skillFrequency * skillParser.getActivationResultNumber()) / userInput.getTime());
 					
-				return ((scoreContribution * boostFrequency * 1.25) + 
-						(scoreContribution * (1 - boostFrequency))) - 
-						 scoreContribution;
+				return skillContribution + (((scoreContribution * boostFrequency * 1.25) + 
+											 (scoreContribution * (1 - boostFrequency))) - 
+						 					  scoreContribution);
 					
 					
 			}
 			
 			// Else no SIS applicable, calculate normally
 			else {	
-				return skillCalculator(skillParser);	
+				return skillCalculator(skillParser, userInput);	
 			}
 		}
 		
@@ -263,16 +286,15 @@ private int noteCount;
 				double boostFrequency = Math.min(1, skillParser.getProbability() * 
 						(skillFrequency * skillParser.getActivationResultNumber()) / userInput.getTime());
 
-				return ((scoreContribution * boostFrequency * 1.25) + 
-						(scoreContribution * (1 - boostFrequency))) - 
-						scoreContribution;
-					
+				return skillContribution + (((scoreContribution * boostFrequency * 1.25) + 
+											 (scoreContribution * (1 - boostFrequency))) - 
+											  scoreContribution);
 					
 			}
 				
 			// Else no SIS applicable, calculate normally
 			else {	
-				return skillCalculator(skillParser);	
+				return skillCalculator(skillParser, userInput);	
 			}
 			
 		}
@@ -283,9 +305,7 @@ private int noteCount;
 		
 		// Score-based skills
 		if (skillParser.getActivationCondition().contains("scored")) {
-			
 			return Math.floorDiv(userInput.getFinalScore(), (int)skillParser.getActivationConditionNumber());
-			
 		}
 		
 		// Time-based skills
@@ -307,32 +327,38 @@ private int noteCount;
 	private double scoreContribution(UserInput userInput, int finalBaseStats) {
 		noteCount = userInput.getNoteCount();
 		
-		
 		if (noteCount > 800) {
+			level = 7;
 			return CalculateOver800(finalBaseStats);
 		}
 		
 		else if (noteCount <= 800 && noteCount > 600) {
+			level = 6;
 			return Calculate600To800(finalBaseStats);
 		}
 		
 		else if (noteCount <= 600 && noteCount > 400) {
+			level = 5;
 			return Calculate400To600(finalBaseStats);
 		}
 		
 		else if (noteCount <= 400 && noteCount > 200) {
+			level = 4;
 			return Calculate200To400(finalBaseStats);
 		}
 		
 		else if (noteCount <= 200 && noteCount > 100) {
+			level = 3;
 			return Calculate100To200(finalBaseStats);
 		}
 		
 		else if (noteCount <= 100 && noteCount > 50) {
+			level = 2;
 			return Calculate50To100(finalBaseStats);
 		}
 		
 		else {
+			level = 1;
 			return Calculate0To50(finalBaseStats);
 		}
 	}
@@ -342,9 +368,26 @@ private int noteCount;
 		int remainder = noteCount - 800;
 		noteCount = noteCount - remainder;
 		
-		return Calculate600To800(finalBaseStats) +
-			   (Math.round(remainder * perfectPercentage)      * noteHitCalculator(finalBaseStats, perfectHit, comboMultiplier[6])) +
-			   (Math.round(noteCount * (1 - perfectPercentage) * noteHitCalculator(finalBaseStats, greatHit,   comboMultiplier[6])));				  
+		// Add PL conversion to current Skill Contribution
+		if (isPerfectLockCard) {
+			int notesConverted = (int)(totalNotesConverted / level);
+			skillContribution = skillContribution + Math.round(notesConverted * (noteHitCalculator(finalBaseStats, perfectHit, comboMultiplier[6]) -
+																				 noteHitCalculator(finalBaseStats, greatHit,   comboMultiplier[6])));
+			
+			return Calculate600To800(finalBaseStats) + 
+					   (Math.round(Math.min(remainder, (remainder * perfectPercentage) + notesConverted) * 
+							 noteHitCalculator(finalBaseStats, perfectHit, comboMultiplier[6]))) +
+					   (Math.round(Math.max(0, (remainder * (1 - perfectPercentage)) - notesConverted) *
+							 noteHitCalculator(finalBaseStats, greatHit,   comboMultiplier[6])));	
+		}
+		// Otherwise proceed normally
+		else{
+		
+			return Calculate600To800(finalBaseStats) + 
+					   (Math.round(remainder * perfectPercentage)      * noteHitCalculator(finalBaseStats, perfectHit, comboMultiplier[6])) +
+					   (Math.round(remainder * (1 - perfectPercentage) * noteHitCalculator(finalBaseStats, greatHit,   comboMultiplier[6])));	
+					
+		}
 		
 	}
 	
@@ -353,9 +396,26 @@ private int noteCount;
 		int remainder = noteCount - 600;
 		noteCount = noteCount - remainder;
 		
-		return Calculate400To600(finalBaseStats) +
-			   (Math.round(remainder * perfectPercentage)      * noteHitCalculator(finalBaseStats, perfectHit, comboMultiplier[5])) +
-			   (Math.round(noteCount * (1 - perfectPercentage) * noteHitCalculator(finalBaseStats, greatHit,   comboMultiplier[5])));	
+		// Add PL conversion to current Skill Contribution
+		if (isPerfectLockCard) {
+			int notesConverted = (int)(totalNotesConverted / level);
+			skillContribution = skillContribution + Math.round(notesConverted * (noteHitCalculator(finalBaseStats, perfectHit, comboMultiplier[5]) -
+																				 noteHitCalculator(finalBaseStats, greatHit,   comboMultiplier[5])));
+			
+			return Calculate400To600(finalBaseStats) + 
+					   (Math.round(Math.min(remainder, (remainder * perfectPercentage) + notesConverted) * 
+							 noteHitCalculator(finalBaseStats, perfectHit, comboMultiplier[5]))) +
+					   (Math.round(Math.max(0, (remainder * (1 - perfectPercentage)) - notesConverted) *
+							 noteHitCalculator(finalBaseStats, greatHit,   comboMultiplier[5])));	
+		}
+		// Otherwise proceed normally
+		else{
+		
+			return Calculate400To600(finalBaseStats) +
+					(Math.round(remainder * perfectPercentage)      * noteHitCalculator(finalBaseStats, perfectHit, comboMultiplier[5])) +
+					(Math.round(remainder * (1 - perfectPercentage) * noteHitCalculator(finalBaseStats, greatHit,   comboMultiplier[5])));	
+		
+		}
 		
 	}
 	
@@ -364,9 +424,26 @@ private int noteCount;
 		int remainder = noteCount - 400;
 		noteCount = noteCount - remainder;
 		
-		return Calculate200To400(finalBaseStats) + 
-			   (Math.round(remainder * perfectPercentage)      * noteHitCalculator(finalBaseStats, perfectHit, comboMultiplier[4])) +
-			   (Math.round(noteCount * (1 - perfectPercentage) * noteHitCalculator(finalBaseStats, greatHit,   comboMultiplier[4])));	
+		// Add PL conversion to current Skill Contribution
+		if (isPerfectLockCard) {
+			int notesConverted = (int)(totalNotesConverted / level);
+			skillContribution = skillContribution + Math.round(notesConverted * (noteHitCalculator(finalBaseStats, perfectHit, comboMultiplier[4]) -
+																				 noteHitCalculator(finalBaseStats, greatHit,   comboMultiplier[4])));
+			
+			return Calculate200To400(finalBaseStats) + 
+					   (Math.round(Math.min(remainder, (remainder * perfectPercentage) + notesConverted) * 
+							 noteHitCalculator(finalBaseStats, perfectHit, comboMultiplier[4]))) +
+					   (Math.round(Math.max(0, (remainder * (1 - perfectPercentage)) - notesConverted) *
+							 noteHitCalculator(finalBaseStats, greatHit,   comboMultiplier[4])));	
+		}
+		// Otherwise proceed normally
+		else{
+		
+			return Calculate200To400(finalBaseStats) + 
+					(Math.round(remainder * perfectPercentage)      * noteHitCalculator(finalBaseStats, perfectHit, comboMultiplier[4])) +
+					(Math.round(remainder * (1 - perfectPercentage) * noteHitCalculator(finalBaseStats, greatHit,   comboMultiplier[4])));	
+		
+		}
 		
 	}
 	
@@ -375,9 +452,26 @@ private int noteCount;
 		int remainder = noteCount - 200;
 		noteCount = noteCount - remainder;
 		
-		return Calculate100To200(finalBaseStats) +
-			   (Math.round(remainder * perfectPercentage)      * noteHitCalculator(finalBaseStats, perfectHit, comboMultiplier[3])) +
-			   (Math.round(noteCount * (1 - perfectPercentage) * noteHitCalculator(finalBaseStats, greatHit,   comboMultiplier[3])));			
+		// Add PL conversion to current Skill Contribution
+		if (isPerfectLockCard) {
+			int notesConverted = (int)(totalNotesConverted / level);
+			skillContribution = skillContribution + Math.round(notesConverted * (noteHitCalculator(finalBaseStats, perfectHit, comboMultiplier[3]) -
+																				 noteHitCalculator(finalBaseStats, greatHit,   comboMultiplier[3])));
+			
+			return Calculate100To200(finalBaseStats) + 
+					   (Math.round(Math.min(remainder, (remainder * perfectPercentage) + notesConverted) * 
+							 noteHitCalculator(finalBaseStats, perfectHit, comboMultiplier[3]))) +
+					   (Math.round(Math.max(0, (remainder * (1 - perfectPercentage)) - notesConverted) * 
+							 noteHitCalculator(finalBaseStats, greatHit,   comboMultiplier[3])));	
+		}
+		// Otherwise proceed normally
+		else{
+		
+			return Calculate100To200(finalBaseStats) +
+					(Math.round(remainder * perfectPercentage)      * noteHitCalculator(finalBaseStats, perfectHit, comboMultiplier[3])) +
+					(Math.round(remainder * (1 - perfectPercentage) * noteHitCalculator(finalBaseStats, greatHit,   comboMultiplier[3])));
+		
+		}
 		
 	}
 	
@@ -386,9 +480,26 @@ private int noteCount;
 		int remainder = noteCount - 100;
 		noteCount = noteCount - remainder;
 		
-		return Calculate50To100(finalBaseStats) +
+		// Add PL conversion to current Skill Contribution
+		if (isPerfectLockCard) {
+			int notesConverted = (int)(totalNotesConverted / level);
+			skillContribution = skillContribution + Math.round(notesConverted * (noteHitCalculator(finalBaseStats, perfectHit, comboMultiplier[2]) -
+																				 noteHitCalculator(finalBaseStats, greatHit,   comboMultiplier[2])));
+			
+			return Calculate50To100(finalBaseStats) + 
+					   (Math.round(Math.min(remainder, (remainder * perfectPercentage) + notesConverted) * 
+							 noteHitCalculator(finalBaseStats, perfectHit, comboMultiplier[2]))) +
+					   (Math.round(Math.max(0, (remainder * (1 - perfectPercentage)) - notesConverted) *
+							 noteHitCalculator(finalBaseStats, greatHit,   comboMultiplier[2])));	
+		}
+		// Otherwise proceed normally
+		else{
+		
+			return Calculate50To100(finalBaseStats) +
 			   (Math.round(remainder * perfectPercentage)      * noteHitCalculator(finalBaseStats, perfectHit, comboMultiplier[2])) +
-			   (Math.round(noteCount * (1 - perfectPercentage) * noteHitCalculator(finalBaseStats, greatHit,   comboMultiplier[2])));
+			   (Math.round(remainder * (1 - perfectPercentage) * noteHitCalculator(finalBaseStats, greatHit,   comboMultiplier[2])));
+		
+		}
 		
 	}
 	
@@ -397,16 +508,50 @@ private int noteCount;
 		int remainder = noteCount - 50;
 		noteCount = noteCount - remainder;
 		
+		// Add PL conversion to current Skill Contribution
+		if (isPerfectLockCard) {
+			int notesConverted = (int)(totalNotesConverted / level);
+			skillContribution = skillContribution + Math.round(notesConverted * (noteHitCalculator(finalBaseStats, perfectHit, comboMultiplier[1]) -
+																				 noteHitCalculator(finalBaseStats, greatHit,   comboMultiplier[1])));
+			
+			return Calculate0To50(finalBaseStats) + 
+					   (Math.round(Math.min(remainder, (remainder * perfectPercentage) + notesConverted) * 
+							 noteHitCalculator(finalBaseStats, perfectHit, comboMultiplier[1]))) +
+					   (Math.round(Math.max(0, (remainder * (1 - perfectPercentage)) - notesConverted) *
+					         noteHitCalculator(finalBaseStats, greatHit,   comboMultiplier[1])));	
+		}
+		// Otherwise proceed normally
+		else{
+		
 		return Calculate0To50(finalBaseStats) + 
 			   (Math.round(remainder * perfectPercentage)      * noteHitCalculator(finalBaseStats, perfectHit, comboMultiplier[1])) +
-			   (Math.round(noteCount * (1 - perfectPercentage) * noteHitCalculator(finalBaseStats, greatHit,   comboMultiplier[1])));
+			   (Math.round(remainder * (1 - perfectPercentage) * noteHitCalculator(finalBaseStats, greatHit,   comboMultiplier[1])));
+		
+		}
 		
 	}
 	
 	private double Calculate0To50(int finalBaseStats) {
 		
-		return (Math.round(noteCount * perfectPercentage)      * noteHitCalculator(finalBaseStats, perfectHit, comboMultiplier[0])) +
-			   (Math.round(noteCount * (1 - perfectPercentage) * noteHitCalculator(finalBaseStats, greatHit,   comboMultiplier[0])));
+		int remainder = noteCount;
+		
+		// Add PL conversion to current Skill Contribution
+		if (isPerfectLockCard) {
+			int notesConverted = (int)(totalNotesConverted / level);
+			skillContribution = skillContribution + Math.round(notesConverted * (noteHitCalculator(finalBaseStats, perfectHit, comboMultiplier[5]) -
+																				 noteHitCalculator(finalBaseStats, greatHit,   comboMultiplier[5])));
+			return (Math.round(Math.min(remainder, (remainder * perfectPercentage) + notesConverted) * 
+									noteHitCalculator(finalBaseStats, perfectHit, comboMultiplier[0]))) +
+				   (Math.round(Math.max(0, (remainder * (1 - perfectPercentage)) - notesConverted) * 
+							        noteHitCalculator(finalBaseStats, greatHit,   comboMultiplier[0])));	
+		}
+		// Otherwise proceed normally
+		else{
+		
+			return (Math.round(remainder * perfectPercentage)      * noteHitCalculator(finalBaseStats, perfectHit, comboMultiplier[0])) +
+				   (Math.round(remainder * (1 - perfectPercentage) * noteHitCalculator(finalBaseStats, greatHit,   comboMultiplier[0])));
+		
+		}
 		
 	}
 	

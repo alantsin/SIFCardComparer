@@ -226,11 +226,11 @@ public class AbsoluteCalculator {
 			if (userInput.getCard1SIS().contains("250%") && skillParser.getActivationResult().contains("score")) {
 				return skillFrequency * (skillParser.getActivationResultNumber() * 2.5);
 			}
-			
+			// 270x Heel
 			else if (userInput.getCard1SIS().contains("270x") && skillParser.getActivationResult().contains("HP")) {
 				return skillFrequency * (skillParser.getActivationResultNumber() * 270);
 			}
-			
+			// 25% Trick
 			else if (userInput.getCard1SIS().contains("25%") && skillParser.getActivationResult().contains("seconds")) {
 					
 				double boostFrequency = Math.min(1, (skillFrequency * skillParser.getActivationResultNumber()) / userInput.getTime());

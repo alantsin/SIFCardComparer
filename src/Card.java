@@ -25,7 +25,7 @@ public class Card {
 	private int offStat;
 	
 	private int bondPoints;
-	
+
 	private String skillType;
 	private String skillDetails;
 	
