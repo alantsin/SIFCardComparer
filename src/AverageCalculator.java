@@ -114,21 +114,19 @@ private int noteCount;
 	private void skillContribution(Card card, UserInput userInput) {
 		
 		// If Star-note Umi
-		if (Integer.parseInt(userInput.getCard1ID()) == 206) {
+		if (Integer.parseInt(userInput.getCard1ID()) == 206 && card.getCardNumber() == 1) {
 			
 			skillContribution = starNoteCalculator(card, userInput, 1);
-			return;
 			
 		}
 		
-		else if (Integer.parseInt(userInput.getCard2ID()) == 206) {
+		else if (Integer.parseInt(userInput.getCard2ID()) == 206 && card.getCardNumber() == 2) {
 			
 			skillContribution = starNoteCalculator(card, userInput, 2);
-			return;
-			
 		}
 		
-		if (!"N".equals(card.getRarity())) {
+		
+		else if (!"N".equals(card.getRarity())) {
 			
 			SkillParser skillParser = new SkillParser(card.getSkillDetails());
 			

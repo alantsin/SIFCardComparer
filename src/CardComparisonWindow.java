@@ -75,7 +75,6 @@ public class CardComparisonWindow {
 	protected void createContents() {
 		UserInput userInput = new UserInput();
 		shlSifCardStrength = new Shell();
-		shlSifCardStrength.setMinimumSize(new Point(550, 400));
 		shlSifCardStrength.setSize(550, 400);
 		shlSifCardStrength.setText("Love Live! School Idol Festival Card Strength Calculator by Umidah");
 		shlSifCardStrength.setLayout(null);
@@ -112,11 +111,13 @@ public class CardComparisonWindow {
 		comboStar.setVisible(false);
 		
 		Label lblCard1SIS = new Label(shlSifCardStrength, SWT.NONE);
+		lblCard1SIS.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		lblCard1SIS.setToolTipText("School Idol Skill for Card 1");
 		lblCard1SIS.setBounds(5, 229, 70, 15);
 		lblCard1SIS.setText("Card 1 SI Skill");
 		
 		Combo comboCard1SIS = new Combo(shlSifCardStrength, SWT.READ_ONLY);
+		comboCard1SIS.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		comboCard1SIS.setBounds(115, 225, 178, 23);
 		
 		comboCard1SIS.add("0% None");
@@ -126,11 +127,13 @@ public class CardComparisonWindow {
 		comboCard1SIS.setText("0% None");
 		
 		Label lblCard2SIS = new Label(shlSifCardStrength, SWT.NONE);
+		lblCard2SIS.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		lblCard2SIS.setToolTipText("School Idol Skill for Card 2");
 		lblCard2SIS.setBounds(5, 257, 70, 15);
 		lblCard2SIS.setText("Card 2 SI Skill");
 		
 		Combo comboCard2SIS = new Combo(shlSifCardStrength, SWT.READ_ONLY);
+		comboCard2SIS.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		comboCard2SIS.setBounds(115, 253, 178, 23);
 		
 		comboCard2SIS.add("0% None");
@@ -141,11 +144,13 @@ public class CardComparisonWindow {
 		comboCard2SIS.setEnabled(false);
 		
 		Label lblCard1ID = new Label(shlSifCardStrength, SWT.NONE);
+		lblCard1ID.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		lblCard1ID.setToolTipText("The 1st card's #ID as seen on School Idol Tomodachi, NOT the in-game album number");
 		lblCard1ID.setBounds(5, 8, 48, 15);
 		lblCard1ID.setText("Card 1 ID");
 		
 		Spinner spinnerCard1 = new Spinner(shlSifCardStrength, SWT.BORDER);
+		spinnerCard1.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		spinnerCard1.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent arg0) {
 				
@@ -197,11 +202,13 @@ public class CardComparisonWindow {
 		checkIdolized1.setText("Idolized");
 		
 		Label lblCard2ID = new Label(shlSifCardStrength, SWT.NONE);
+		lblCard2ID.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		lblCard2ID.setToolTipText("The second card's album number; use 0 if you only want to calculate the strength of 1 card");
 		lblCard2ID.setBounds(5, 35, 48, 15);
 		lblCard2ID.setText("Card 2 ID");
 		
 		Spinner spinnerCard2 = new Spinner(shlSifCardStrength, SWT.BORDER);
+		spinnerCard2.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		spinnerCard2.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent arg0) {
 				
@@ -258,11 +265,13 @@ public class CardComparisonWindow {
 		checkIdolized2.setText("Idolized");
 		
 		lblAttribute = new Label(shlSifCardStrength, SWT.NONE);
+		lblAttribute.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		lblAttribute.setToolTipText("Attribute of the song");
 		lblAttribute.setBounds(5, 63, 47, 15);
 		lblAttribute.setText("Attribute");
 		
 		comboAttribute = new Combo(shlSifCardStrength, SWT.READ_ONLY);
+		comboAttribute.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		comboAttribute.setBounds(115, 59, 58, 23);
 		
 		comboAttribute.add("Smile");
@@ -271,11 +280,13 @@ public class CardComparisonWindow {
 		comboAttribute.setText("Smile");
 		
 		Label lblSong = new Label(shlSifCardStrength, SWT.NONE);
+		lblSong.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		lblSong.setToolTipText("10% modifier for matching song and members");
 		lblSong.setBounds(178, 63, 27, 15);
 		lblSong.setText("Song");
 		
 		Combo comboSong = new Combo(shlSifCardStrength, SWT.READ_ONLY);
+		comboSong.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		comboSong.setBounds(226, 59, 67, 23);
 		
 		comboSong.add("μ's");
@@ -284,11 +295,13 @@ public class CardComparisonWindow {
 		comboSong.setText("μ's");
 		
 		Label lblNoteCount = new Label(shlSifCardStrength, SWT.NONE);
+		lblNoteCount.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		lblNoteCount.setToolTipText("Number of notes in the song, required for Note-based and Combo-based skills");
 		lblNoteCount.setBounds(5, 90, 62, 15);
 		lblNoteCount.setText("Note Count");
 		
 		Spinner spinnerNoteCount = new Spinner(shlSifCardStrength, SWT.BORDER);
+		spinnerNoteCount.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		spinnerNoteCount.setTextLimit(4);
 		spinnerNoteCount.setBounds(115, 87, 57, 22);
 		spinnerNoteCount.setMaximum(1000);
@@ -296,11 +309,13 @@ public class CardComparisonWindow {
 		spinnerNoteCount.setSelection(50);
 		
 		Label lblTimes = new Label(shlSifCardStrength, SWT.NONE);
+		lblTimes.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		lblTimes.setToolTipText("Song length in seconds, required for Time-based skills");
 		lblTimes.setBounds(178, 90, 43, 15);
 		lblTimes.setText("Time (s)");
 		
 		Spinner spinnerTime = new Spinner(shlSifCardStrength, SWT.BORDER);
+		spinnerTime.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		spinnerTime.setTextLimit(3);
 		spinnerTime.setBounds(226, 87, 67, 22);
 		spinnerTime.setMaximum(600);
@@ -308,26 +323,31 @@ public class CardComparisonWindow {
 		spinnerTime.setSelection(120);
 		
 		Label lblPerfect = new Label(shlSifCardStrength, SWT.NONE);
+		lblPerfect.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		lblPerfect.setToolTipText("Percentage of Perfect notes without PL assistance, required for Perfect-based skills");
 		lblPerfect.setBounds(5, 117, 50, 15);
 		lblPerfect.setText("Perfect %");
 		
 		Spinner spinnerPerfect = new Spinner(shlSifCardStrength, SWT.BORDER);
+		spinnerPerfect.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		spinnerPerfect.setTextLimit(3);
 		spinnerPerfect.setBounds(115, 114, 57, 22);
 		spinnerPerfect.setSelection(75);
 		
 		Text textResult = new Text(shlSifCardStrength, SWT.READ_ONLY | SWT.WRAP);
+		textResult.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		textResult.setFont(SWTResourceManager.getFont("Segoe UI", 9, SWT.NORMAL));
 		textResult.setBounds(299, 169, 235, 182);
 		textResult.setText("Help Honoka with her studying by \r\ncalculating SIF card strength!\r\n\r\nHover your mouse over the labels to \r\nlearn about each field.\r\n\r\nYour results will show up on the bottom after you click the \"Calculate!\" button.");
 		
 		Label lblMemberModifier = new Label(shlSifCardStrength, SWT.NONE);
+		lblMemberModifier.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		lblMemberModifier.setToolTipText("SIF 4.0 additional UR center skill based on member type");
 		lblMemberModifier.setBounds(5, 201, 93, 15);
 		lblMemberModifier.setText("Member Modifier");
 		
 		Combo comboMemberModifier = new Combo(shlSifCardStrength, SWT.READ_ONLY);
+		comboMemberModifier.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		comboMemberModifier.setBounds(115, 197, 178, 23);
 		comboMemberModifier.setEnabled(false);
 		
@@ -346,11 +366,13 @@ public class CardComparisonWindow {
 		comboMemberModifier.setText("0% None");
 		
 		Label lblCenterSkill = new Label(shlSifCardStrength, SWT.NONE);
+		lblCenterSkill.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		lblCenterSkill.setToolTipText("Center Skill for your team (does not consider friend assist)");
 		lblCenterSkill.setBounds(5, 173, 59, 15);
 		lblCenterSkill.setText("Center Skill");
 		
 		Combo comboCenterSkill = new Combo(shlSifCardStrength, SWT.READ_ONLY);
+		comboCenterSkill.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		comboCenterSkill.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
@@ -379,6 +401,7 @@ public class CardComparisonWindow {
 		comboCenterSkill.setText("0% None");
 		
 		Label lblCalculationMethod = new Label(shlSifCardStrength, SWT.NONE);
+		lblCalculationMethod.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		lblCalculationMethod.setToolTipText("Choose which metric to calculate card strength by");
 		lblCalculationMethod.setBounds(5, 292, 105, 15);
 		lblCalculationMethod.setText("Calculation Method");
