@@ -304,7 +304,7 @@ public class CardComparisonWindow {
 		spinnerNoteCount.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		spinnerNoteCount.setTextLimit(4);
 		spinnerNoteCount.setBounds(115, 87, 57, 22);
-		spinnerNoteCount.setMaximum(1000);
+		spinnerNoteCount.setMaximum(9999);
 		spinnerNoteCount.setMinimum(50);
 		spinnerNoteCount.setSelection(50);
 		
